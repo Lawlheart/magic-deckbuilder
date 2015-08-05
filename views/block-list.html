@@ -1,0 +1,6 @@
+			<div class="block" ng-repeat="block in blockList">
+				<h1>{{block[0].block}} Block</h1>
+				<ul ng-repeat="set in block">
+					<li><a ng-href="#/blocks/{{set.code}}">{{set.name}}</a></li>
+				</ul>
+			</div>

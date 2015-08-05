@@ -1,0 +1,64 @@
+body {
+	background-color: #ddd;
+	box-sizing:border-box;
+	color:#222;
+}
+header, footer {
+	height:60px; 
+	background-color: #222;
+	color: #ddd;
+}
+footer {
+	clear:both;
+}
+
+header h1 {
+	margin:0;
+	padding:10px;
+}
+button {
+	height:40px;
+	width: 100px;
+	margin:20px;
+	color: #222;
+}
+
+#output {
+	background-color:#ddd;
+	overflow: auto;
+	min-height: 443px;
+}
+ul.cards {
+	margin:0;
+	padding:0;
+}
+.cards li {
+	list-style:none;
+	display:block;
+	float:left;
+	margin:10px;
+	width: 225px;
+}
+.cards img {
+	border-radius: 11px;
+	height:311px;
+}
+.cards button { 
+	border: 0px;
+	width:40%;
+	margin:5px 5%;
+	padding:0;
+}
+.addCard {
+	background-color: #464;
+}
+.removeCard {
+	background-color: #633;
+}
+
+
+
+h1.manaTitle {
+	float:left;
+	width:100%;
+}
