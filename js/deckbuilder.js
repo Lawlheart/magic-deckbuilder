@@ -114,7 +114,15 @@ function Deck(type, commander) {
 		var HTML = '<ul class="cards">'
 		for(var i=0;i<cards.length;i++) {
 			var card = this.cards[cards[i]]
-			HTML +="<li><img src='http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card' alt='" + card.name + "'></li>"
+			HTML += "<li><img src='"
+			if(card.name !== this.commander) {
+				HTML += "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="
+				HTML += card.multiverseid
+				HTML += "&type=card' "
+			} else {
+				HTML += "img/" + card.multiverseid + ".png'"
+			}
+			HTML +=" alt='" + card.name + "'></li>"
 		}
 		HTML += "</ul>"
 		return HTML

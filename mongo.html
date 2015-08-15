@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+</head>
+<body>
+		<h1>{{commander}}</h1>
+		<input type="text" id="search">
+		<button id="cardSearch">Search!</button>
+		<div id="output"></div>
+		<script>
+			function renderCards(cards) {
+				var HTML = '<ul class="cards">'
+				for(var i=0;i<cards.length;i++) {
+				var card = cards[i]
+				if(card.multiverseid !== undefined) {
+					HTML +="<li><img src='http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card' alt='" + card.name + "'></li>"
+					}
+				}
+				HTML += "</ul>"
+				return HTML
+			}
+			$('#cardSearch').click(function() {
+				var search = $('#search').val();
+				$.ajax({
+					url: 'http://localhost:3030/search', 
+					dataType : "json",
+					data: {search: search} ,
+					success: function(data) { 
+						console.log(data)
+						$('#output').html(renderCards(data)) 
+					}
+				});
+			});
+		</script>
+</body>
+</html>

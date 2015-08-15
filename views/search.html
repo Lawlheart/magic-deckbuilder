@@ -1,0 +1,53 @@
+	<style>
+		#cardImage {
+			float:right;
+			width:250px;
+			height:350px;
+		}
+		#cardImage img {
+			border-radius: 10px;
+		}
+		.setID {
+			background-color:black;
+			padding:4px;
+		}
+		.card {
+			list-style: none;
+			cursor:pointer;
+			display:block;
+		}
+		.set {
+			width:400px;
+		}
+		input, select {
+			margin:10px 20px;
+			background-color: black;
+			border: 0px;
+			padding:6px;
+		}
+	</style>
+	<h2>Card Search:</h2>
+
+	<label for="deckName">Deck Name</label>
+	<input name="deckName" ng-model="deckName"><br>
+
+	<label for="deckType">Deck Type</label>
+	<select name="deckType" id="deckType" ng-model="deckType">
+		<option value="commander">Commander</option>
+		<option value="standard">Standard</option>
+		<option value="modern">Modern</option>
+	</select><br>
+
+	<label for="commanderName">Commander</label>
+	<input name="commanderName "type="text" ng-model="commanderName"><br>
+
+	<button id="newDeck">New Deck</button><br>
+
+	<label for="cardSearch">Card Search</label>
+	<input type="text" ng-model="search" name="cardSearch">
+<div id="cardImage"></div>
+<div id="magic" ng-repeat="set in magic | orderBy: '-releaseDate'">
+	<ul class="set">
+		<li class="card" ng-repeat="card in set.cards | filter:search" data-mvid="{{card.multiverseid}}"data-setcode="{{set.code}}" data-cardnumber="{{card.number}}"><span class="setID">{{set.code}}</span> {{card.name}}: {{card.manaCost}}</li>
+	</ul>
+</div>

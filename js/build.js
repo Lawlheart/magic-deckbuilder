@@ -210,30 +210,21 @@ var shuyun = new Deck("commander", "Shu Yun, the Silent Tempest")
 	// console.log(animar.distribution);
 	// console.log(animar.manaCounts);
 	// console.log(animar.cardCount);
-function buildCardDatabase(database) {
-	var cards_db = []
-	for(var key in database) {
-		set = database[key];
-		for(var key in set.cards) {
-			var card = set.cards[key];
-			card["set"] = set.name;
-			card["setCode"] = set.code;
-			cards_db.push(card);
-		}
+
+var cards_db = []
+for(var key in database) {
+	set = database[key];
+	for(var key in set.cards) {
+		var card = set.cards[key];
+		card["set"] = set.name;
+		card["setCode"] = set.code;
+		cards_db.push(card);
 	}
-	console.log(cards_db.length + " total cards compiled")
-	return cards_db
 }
-function buildSetDatabase(database) {
-	var sets_db = []
-	for(key in database) {
-		set = database[key];
-		sets_db.push(set);
-	}
-	return sets_db
-}
-// var sets_db = buildSetDatabase(database)
-console.log(animar)
+console.log(cards_db.length)
+
+
+
 // WITH JUST MONGODB
 
 var MongoClient = require('mongodb').MongoClient

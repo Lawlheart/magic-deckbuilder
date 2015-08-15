@@ -25,20 +25,24 @@ var animar = new Deck("commander", "Animar, Soul of Elements")
 	animar.addCards([181], "CMD");
 	animar.addCards([182], "M12");
 	animar.addCards([173,284], "M15");
+	animar.addCards([182], "ORI");
+
 	animar.addCards([131], "ALA");
 	animar.addCards([136,241], "ISD");
 	animar.addCards([47,171,176,195], "AVR");
-	animar.addCards([33,50,101,116,120,123,133,147,162,167,170,180,181,188,191,193,194,196,203,204,209,214, 216,224,240,243,246,247], "GTC");
-	animar.addCards([41,47,59,91,100,115,119,151], "DGM");
-	animar.addCards([199], "THS")
+	animar.addCards([50,120,123,133,147,162,167,170,181,188,191,193,194,196,203,204,209,216,224,240,243,246,247], "GTC");
+	animar.addCards([47,59,91,100,115,119,151], "DGM");
+	animar.addCards([153,170,180,199,209], "THS")
 	animar.addCards([149,150], "BNG");
 	animar.addCards([124,126,149], "JOU")
-	animar.addCards([39,42,140,201,208,240,244], "KTK");
-	animar.addCards([43,105,116,131,140,144,148,172], "FRF");
-	animar.addCards([175,177,191,199,208,216], "DTK");
-	animar.addCards([246], "ZEN", 12);
+	animar.addCards([53],"DDO")
+	animar.addCards([39,42,133,144,201,207,208,234,240,244], "KTK");
+	animar.addCards([113,131,137,138,144,148,172], "FRF");
+	animar.addCards([175,177,191,210,216], "DTK");
+	animar.addCards([244,245,249],"MM2")
+	animar.addCards([246], "ZEN", 7);
 	animar.addCards([236], "ZEN", 7);
-	animar.addCards([243], "ZEN", 7);
+	animar.addCards([243], "ZEN", 8);
 var shuyun = new Deck("commander", "Shu Yun, the Silent Tempest")
 	shuyun.addCards([52],"FRF")
 	shuyun.addCards([152], "M12");
@@ -84,3 +88,5 @@ var decklist = {
 	shuyun: shuyun,
 	alesha: alesha
 }
+
+console.log(animar)

@@ -10,7 +10,10 @@ app.config(['$routeProvider', function($routeProvider) {
 	}).when('/blocks/:blockId', {
 		controller: 'BlockController',
 		templateUrl: 'views/block.html'
-	})
+	}).when('/search', {
+		controller: 'SearchController',
+		templateUrl: 'views/search.html'
+	});
 	// .otherwise({
 	// 	redirectTo: '/'
 	// })

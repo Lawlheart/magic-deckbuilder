@@ -8,3 +8,27 @@
 			<button id="seeDeck">See Deck</button>
 			<button id="deckByCmc">Sort Deck</button>
 			<div id="output"></div>
+			<script>
+				var selectedDeck = $('#deck option:selected').val();
+				var deck = decklist[selectedDeck];
+				$('#deck').change(function() {
+					var selectedDeck = $('#deck option:selected').val();	
+					deck = decklist[selectedDeck];
+					deck.renderManaCurve()
+					console.log(deck.cardCount)
+					console.log(deck.manaCounts)
+				});
+				$('#draw').click(function() {
+					var HTML = deck.renderCards(deck.draw(7));
+					$('#output').html(HTML);
+				});
+				$('#seeDeck').click(function() {
+					var HTML = deck.renderCards(deck.deckList);
+					$('#output').html(HTML);
+				});
+				$('#deckByCmc').click(function() {
+					var HTML = deck.deckByCmc();
+					$('#output').html(HTML);
+				});
+				console.log("test")
+			</script>

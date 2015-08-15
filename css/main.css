@@ -1,30 +1,85 @@
-body {
-	background-color: #ddd;
-	box-sizing:border-box;
-	color:#222;
-}
-header, footer {
-	height:60px; 
-	background-color: #222;
-	color: #ddd;
-}
-footer {
-	clear:both;
-}
+/*GENERAL*/
+	body {
+		background-color: #223322;
+		background-image: url('http://www.transparenttextures.com/patterns/pool-table.png');
+		box-sizing:border-box;
+		color:#ddd;
+	}
+	.main {
+		min-height: 700px;
+	}
+	header h1 {
+		margin:0;
+		padding:10px;
+	}
+	button {
+		height:40px;
+		width: 100px;
+		margin:20px;
+		color: #222;
+	}
+	select, option {
+		background-color: rgba(20,20,20,.8);
+		
+	}
 
-header h1 {
-	margin:0;
-	padding:10px;
-}
-button {
-	height:40px;
-	width: 100px;
-	margin:20px;
-	color: #222;
-}
+/*HEADER*/
+	header, nav {
+		padding:0;
+		margin:0;
+	}
+	nav {
+		list-style: none;
+		display: flex;
+		background-color: #333;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+	nav a {
+		text-decoration: none;
+		color:#ccc;
+    text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
+	}
+	nav ul {
+		display:flex;
+	}
+	nav li {
+		display:block;
+		font-size: 24px;
+		padding:6px;
+		flex: 0 1 auto;
+		background: linear-gradient(transparent, #111);
+		border-left:1px solid #444;
+		border-right: 1px solid #111;
+		border-bottom:1px solid #000;
+		border-top:1px solid #555;
+	}
+	li.spacer {
+		flex:1 10 auto;
+	}
+	li.right {
+		align-self: flex-end;
+	}
+
+/*FOOTER*/
+	footer {
+		height:60px; 
+		padding:0;
+		margin:0;
+		background-color: #222;
+		color: #ddd;
+		clear:both;
+	}
+	footer p {
+		padding:18px;
+		margin:4px auto;
+		text-align: center;
+		text-shadow:0 1px 1px #fff;
+	}
+
 
 #output {
-	background-color:#ddd;
 	overflow: auto;
 	min-height: 443px;
 }
@@ -43,7 +98,7 @@ ul.cards {
 	border-radius: 11px;
 	height:311px;
 }
-.cards button { 
+.cards button, .addCard, .removeCard { 
 	border: 0px;
 	width:40%;
 	margin:5px 5%;
