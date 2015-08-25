@@ -1,14 +1,26 @@
 function cardSearch(search, set) {
+	// console.log(search, set)
 	var cardset = database[set.toUpperCase()].cards;
-	for(key in cardset) {
+	for(var key in cardset) {
 		var card = cardset[key];
 		if(typeof search === "string") {
 			if(search === card.name) {
-				return card;
+				return JSON.parse(JSON.stringify(card));
 			}
 		} else if(typeof search === "number") {
 			if(search == card.number) {
-				return card
+				return JSON.parse(JSON.stringify(card));
+			}
+		}
+	} 
+}
+function findCardByMvId(mv_id) {
+	for(var key in database) {
+		var set = database[key]
+		for(var key in set.cards) {
+			var card = set.cards[key];
+			if(card.multiverseid === mv_id) {
+				return card;
 			}
 		}
 	}
@@ -38,7 +50,8 @@ function convertMana(card, mana) {
 		return mana
 	}
 }
-function Deck(type, commander) {
+function Deck(name, type, commander) {
+	this.name = name;
 	this.deckType = type;
 	this.commander = commander;
 	this.deckList = [];
@@ -68,7 +81,6 @@ function Deck(type, commander) {
 			// create card object for this.cards
 			this.cards[card.name] = card;
 			this.cards[card.name].quantity = quantity;
-			this.cards[card.name].inDeck = true;
 
 			//add to this.cardCount
 			this.cardCount += card.quantity;
@@ -89,6 +101,34 @@ function Deck(type, commander) {
 				this.deckList.push(card.name);
 			}
 		}
+	}
+	this.addCardsByMvid = function(mv_id) {
+		var card = findCardByMvId(mv_id);
+		// create card object for this.cards
+		
+		if(this.cards[card.name] === undefined) {
+			this.cards[card.name] = card; 
+			this.cards[card.name].quantity = 1;
+		} else {
+			this.cards[card.name].quantity += 1;
+		}
+
+		//add to this.cardCount
+		this.cardCount += 1;
+
+		// add to this.manaCounts
+		convertMana(card, this.manaCounts);
+
+		//add to this.distribution
+		var types = typeof card.types === "string" ? card.types : card.types.join("_");
+		if(types === "Creature" || types === "Land"){
+			this.distribution[types] += 1
+		} else {
+			this.distribution["Other"] += 1
+		}
+
+		//add to this.deckList
+		this.deckList.push(card.name);
 	}
 	this.draw = function(drawCount) {
 		var deck = this.deckList
@@ -114,15 +154,7 @@ function Deck(type, commander) {
 		var HTML = '<ul class="cards">'
 		for(var i=0;i<cards.length;i++) {
 			var card = this.cards[cards[i]]
-			HTML += "<li><img src='"
-			if(card.name !== this.commander) {
-				HTML += "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="
-				HTML += card.multiverseid
-				HTML += "&type=card' "
-			} else {
-				HTML += "img/" + card.multiverseid + ".png'"
-			}
-			HTML +=" alt='" + card.name + "'></li>"
+			HTML +="<li><img src='http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card' alt='" + card.name + "'></li>"
 		}
 		HTML += "</ul>"
 		return HTML
@@ -131,6 +163,7 @@ function Deck(type, commander) {
 		var deck = this.deckList;
 		var HTML = ""
 		for(var mana = 1;mana<9;mana++) {
+			HTML += "<div class='cmc-sort'>"
 			HTML += '<h1 class="manaTitle">Mana Cost: ' + mana + '</h1>'
 			var sorted = []
 			for(var i=0;i<deck.length;i++) {
@@ -140,6 +173,7 @@ function Deck(type, commander) {
 				}
 			}
 			HTML += this.renderCards(sorted);
+			HTML += "</div>"
 		}
 		return HTML
 	}
@@ -147,7 +181,7 @@ function Deck(type, commander) {
 		var curve = {};
 		var totalMana = 0;
 		var totalCards = 0;
-		for(key in this.cards) {
+		for(var key in this.cards) {
 			var card = this.cards[key];
 			if(curve[card.cmc] !== undefined && card.cmc !== undefined) {
 				curve[card.cmc] += card.quantity;
@@ -160,8 +194,19 @@ function Deck(type, commander) {
 			}
 		}
 		var average = totalMana/totalCards;
-		console.log(curve)
+		console.log("Mana Curve: ", curve)
 		console.log("Average CMC: " + average)
 		return curve
+	}
+	this.exportDeck = function() {
+		var deck = {}
+		deck.name = this.name;
+		deck.type = this.deckType;
+		deck.commander = this.commander;
+		deck.cards = [];
+		for(var key in this.cards) {
+			deck.cards.push(this.cards[key].multiverseid);
+		}
+		return deck
 	}
 }

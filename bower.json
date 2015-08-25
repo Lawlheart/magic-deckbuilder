@@ -1,0 +1,25 @@
+{
+  "name": "Magic: The Gathering Deckbuilder",
+  "version": "0.7.0",
+  "authors": [
+    "LawlietBlack <kenneth.black@live.com>"
+  ],
+  "description": "A Deckbuilder for Magic: The Gathering.",
+  "main": "index.html",
+  "keywords": [
+    "magic"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-elements": "PolymerElements/iron-elements#~1.0.3",
+    "paper-elements": "PolymerElements/paper-elements#~1.0.4",
+    "polymer": "Polymer/polymer#^1.0.0",
+    "polymer-themes": "~1.0.1"
+  }
+}

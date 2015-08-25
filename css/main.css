@@ -1,12 +1,13 @@
 /*GENERAL*/
 	body {
 		background-color: #223322;
-		background-image: url('http://www.transparenttextures.com/patterns/pool-table.png');
 		box-sizing:border-box;
 		color:#ddd;
 	}
-	.main {
+	main {
 		min-height: 700px;
+		width:90%;
+		margin:10px auto;
 	}
 	header h1 {
 		margin:0;
@@ -24,6 +25,34 @@
 	}
 
 /*HEADER*/
+
+	.nav-title {
+	  padding-right: 0;
+	  padding-left: 0;
+	  background: linear-gradient(transparent, #910000),
+	              #000 url('../img/magic.png') no-repeat center;
+	  background-size: cover;
+	  margin:0 auto 0;
+	  height: 200px;
+	}
+	.nav-title h1 {
+	  margin-top: 20px;
+	  margin-bottom: 0;
+	  -webkit-font-smoothing: antialiased;
+	  text-shadow:  2px 8px 8px rgba(0, 0, 0, 0.6);
+	  color: #ffffff;
+	  font-size: 48px;  
+	  font-family: 'Shift', sans-serif;
+	  font-weight: bold;
+	}
+	.nav-title p {
+	  margin-top: 0;
+	  text-shadow:  1px 4px 4px rgba(0, 0, 0, 0.6);
+	  font-size: 20px;
+	  color: #ffffff;
+	  margin-left: 10px;
+	}
+
 	header, nav {
 		padding:0;
 		margin:0;
@@ -54,6 +83,10 @@
 		border-right: 1px solid #111;
 		border-bottom:1px solid #000;
 		border-top:1px solid #555;
+	}
+	nav li.blink {
+		background-color: green;
+		transition: 1s;
 	}
 	li.spacer {
 		flex:1 10 auto;
@@ -114,6 +147,20 @@ ul.cards {
 
 
 h1.manaTitle {
-	float:left;
 	width:100%;
+	text-align: center;
+	clear:both;
+
+}
+
+.cmc-sort {
+  width: 250px;
+  float: left;
+  clear:right;
+}
+.cmc-sort li {
+	height:30px;
+}
+.cmc-sort li:last-child {
+	height: 311px;
 }
