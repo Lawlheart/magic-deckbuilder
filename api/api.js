@@ -41,7 +41,7 @@ app.get('/', function(req, res, next) {
 	MongoClient.connect(url, function(err, db) {
   	console.log("Connected correctly to server");
   	findDocuments({}, 'decks', db, function(data) {
-  		console.log(data)
+  		console.log(typeof data)
   		res.json(data)
     	db.close();
   	});

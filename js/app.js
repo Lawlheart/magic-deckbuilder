@@ -335,12 +335,12 @@ app.controller('DeckController', ['$scope', '$routeParams', 'decks', 'magic', '$
 }]);
 app.controller('DeckBuildController', ['$scope', 'magic', 'decks', function($scope, magic, decks) {
 		magic.success(function(data) {
-			$scope.magic = {};
+			$scope.magicdata = {};
 			console.log(data)
 			for(key in data) {
 				var releaseDate = new Date(data[key].releaseDate);
 				if( releaseDate > new Date('2003-10-01') && (data[key].type === "expansion"||data[key].type === "core" || data[key].type === "commander" || data[key].type === "duel deck") ) {
-					$scope.magic[key] = data[key];
+					$scope.magicdata[key] = data[key];
 				}
 			}
 			$('body').on('click', 'li.card', function(e) {
@@ -386,10 +386,10 @@ app.controller('DeckBuildController', ['$scope', 'magic', 'decks', function($sco
 
 		});
 		function findCardByMvId(mv_id) {
-			for(var key in $scope.magic) {
-				var set = $scope.magic[key]
-				for(var key in set.cards) {
-					var card = set.cards[key];
+			for(var key in $scope.magicdata) {
+				var set = $scope.magicdata[key]
+				for(var cardkey in set.cards) {
+					var card = set.cards[cardkey];
 					if(card.multiverseid === mv_id) {
 						return card;
 					}
