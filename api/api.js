@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Connection URL 
-var url = 'mongodb://lawliet:answeris42@ds040948.mongolab.com:40948/magic';
+var url = 'mongodb:// (mongodb database location) /magic';
 
 //allows Cross-origin requests
 app.use(function (req, res, next) {
