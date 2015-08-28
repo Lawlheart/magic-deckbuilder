@@ -62,6 +62,7 @@ app.post('/deck', function(req, res) {
   MongoClient.connect(url, function(err, db) {
   	console.log("Connected correctly to server");
     var deck;
+    console.log(req.data)
     for(key in req.body) {
       deck = key;
       deck = JSON.parse(deck)
