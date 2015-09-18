@@ -1,15 +1,6 @@
 var database;
-var debug = false;
-
-function test(message) {
-	if(debug) {
-		console.log(message);
-	}
-}
-
 
 function cardSearch(search, set) {
-	test(search, set);
 	var cardset = database[set.toUpperCase()].cards;
 	for(var key in cardset) {
     if(cardset.hasOwnProperty(key)) {
@@ -41,26 +32,46 @@ function findCardByMvId(mv_id) {
     }
 	}
 }
-function convertMana(card, mana) {
+function convertMana(card, mana, remove) {
 	if(card.manaCost !== undefined) {
 		var cost = card.manaCost;
 		cost = cost.slice(1, -1);
 		cost = cost.split("}{");
 		for(var i=0;i<cost.length;i++) {
 			if(cost[i] === "G") {
-				mana.green += 1;
+				if(!remove) {
+					mana.green += 1;
+				} else {
+					mana.green -= 1;
+				}
 			}
 			if(cost[i] === "R") {
-				mana.red += 1;
+				if(!remove) {
+					mana.red += 1;
+				} else {
+					mana.red -= 1;
+				}
 			}
 			if(cost[i] === "B") {
-				mana.black += 1;
+				if(!remove) {
+					mana.black += 1;
+				} else {
+					mana.black -= 1;
+				}
 			}
 			if(cost[i] === "U") {
-				mana.blue += 1;
+				if(!remove) {
+					mana.blue += 1;
+				} else {
+					mana.blue -= 1;
+				}
 			}
 			if(cost[i] === "W") {
-				mana.white += 1;
+				if(!remove) {
+					mana.white += 1;
+				} else {
+					mana.white -= 1;
+				}
 			}
 		}
 		return mana;
@@ -145,6 +156,27 @@ function Deck(name, type, commander) {
 
 		//add to this.deckList
 		this.deckList.push(card.name);
+	};
+	this.removeCardsByMvid = function(mv_id) {
+		var card = findCardByMvId(mv_id);
+		if(this.cards[card.name] === undefined) {
+			return
+		}
+		if(this.cards[card.name].quantity >= 2) {
+			this.cards[card.name].quantity -= 1;
+		} else if(this.cards[card.name].quantity === 1) {
+			delete this.cards[card.name];
+		}
+		this.cardCount -= 1;
+		convertMana(card, this.manaCounts, true);
+		var types = typeof card.types === "string" ? card.types : card.types.join("_");
+		if(types === "Creature" || types === "Land"){
+			this.distribution[types] -= 1;
+		} else {
+			this.distribution.Other -= 1;
+		}
+		var index = this.deckList.indexOf(card.name);
+		this.deckList.splice(index, 1);
 	};
 	this.draw = function(drawCount) {
 		var deck = this.deckList;
@@ -232,10 +264,9 @@ function Deck(name, type, commander) {
 }
 
 
+angular.module('MagicApp', ['ngRoute'])
 
-var app = angular.module('MagicApp', ['ngRoute']);
-
-app.factory('magic', ['$http', function($http) {
+.factory('magic', ['$http', function($http) {
 	return $http.get('js/all-sets.json')
 			.success(function(data) {
 				database = data;
@@ -243,8 +274,8 @@ app.factory('magic', ['$http', function($http) {
 			}).error(function(err) {
 				return err;
 			});
-}]);
-app.factory('decks', ['$http', 'magic', '$rootScope', function($http, magic, $rootScope) {
+}])
+.factory('decks', ['$http', 'magic', '$rootScope', function($http, magic, $rootScope) {
 	var decklist = {};
 
 	var decks =  $http.get('http://198.199.95.142:6244/')
@@ -280,8 +311,8 @@ app.factory('decks', ['$http', 'magic', '$rootScope', function($http, magic, $ro
 			return decklist;
 		}
 	};
-}]);
-app.config(['$routeProvider', function($routeProvider) {
+}])
+.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/', {
 		controller: 'DeckController',
 		templateUrl: 'views/deck.html'
@@ -301,8 +332,8 @@ app.config(['$routeProvider', function($routeProvider) {
 	.otherwise({
 		redirectTo: '/'
 	});
-}]);
-app.controller('DeckController', ['$scope', '$routeParams', 'decks', 'magic', '$rootScope', function ($scope, $routeParams, decks, magic, $rootScope) {
+}])
+.controller('DeckController', ['$scope', '$routeParams', 'decks', 'magic', '$rootScope', function ($scope, $routeParams, decks, magic, $rootScope) {
 		$scope.decklist = decks.get();
 		var decklist = $scope.decklist;
 		var deck;
@@ -352,49 +383,61 @@ app.controller('DeckController', ['$scope', '$routeParams', 'decks', 'magic', '$
 			var HTML = deck.deckByCmc();
 			$('#output').html(HTML);
 		});
-}]);
-app.controller('DeckBuildController', ['$scope', 'magic', 'decks', function($scope, magic, decks) {
-		magic.success(function(data) {
-			$scope.magic = {};
-			test(data);
-			for(var key in data) {
-        	if(data.hasOwnProperty(key)) {
-        	var releaseDate = new Date(data[key].releaseDate);
-          if( releaseDate > new Date('2003-10-01') && (data[key].type === "expansion"||data[key].type === "core" || data[key].type === "commander" || data[key].type === "duel deck") ) {
-            $scope.magic[key] = data[key];
-          }
-      	}
-			}
-			$('body').on('click', 'li.card', function(e) {
-				var mv_id = e.target.getAttribute('data-mvid');
-				var setcode = e.target.getAttribute('data-setcode');
-				var cardnumber = e.target.getAttribute('data-cardnumber');
-				var $image = $('<img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=' + mv_id +'&amp;type=card" alt=""><button class="addCard" data-mvid="' + mv_id +'" data-setcode="' + setcode +'" data-cardnumber="' + cardnumber + '">Add</button><button class="removeCard"  data-mvid="' + mv_id +'" data-setcode="' + setcode +'" data-cardnumber="' + cardnumber + '">Remove</button>');
-				$('#cardImage').html($image);
-			});
-			$("#cardImage").sticky({topSpacing:0});
-		});
+}])
+.controller('DeckBuildController', ['$scope', 'magic', 'decks', function($scope, magic, decks) {
+	$scope.debug = false;
+	$scope.step = 0;
+	$scope.newDeck = {name: "", type: ""};
+	$scope.currentDeck = {};
+	$scope.currentCard;
+	magic.success(function(data) {
+		$scope.step = 1;
+		$scope.magic = {};
+		//filters set by cards legal in standard, modern, and commander
+		for(var key in data) {
+      	if(data.hasOwnProperty(key)) {
+      	var releaseDate = new Date(data[key].releaseDate);
+        if( releaseDate > new Date('2003-10-01') && (data[key].type === "expansion"||data[key].type === "core" || data[key].type === "commander" || data[key].type === "duel deck") ) {
+          $scope.magic[key] = data[key];
+        }
+    	}
+		}
+
 		$scope.decklist = decks.get();
-		$('body').on('click', '#newDeck', function() {
-			if($scope.decklist[$scope.deckName] === undefined) {
-				$scope.decklist[$scope.deckName] = new Deck($scope.deckName, $scope.deckType, $scope.commanderName);
+		$scope.selectDeck = function(name) {
+			console.log(name)
+			$scope.currentDeck = $scope.decklist[name];
+			console.log($scope.currentDeck)
+			$scope.step = 2;
+		}
+		$scope.makeDeck = function() {
+			if($scope.decklist[$scope.newDeck.name] === undefined) {
+				var deck = new Deck($scope.newDeck.name, $scope.newDeck.type, $scope.newDeck.commander);
+				$scope.decklist[$scope.newDeck.name] = deck;
+				$scope.currentDeck = deck;
+				$scope.step = 2;
 			} else {
 				alert($scope.deckName + " already exists");
 			}
-			console.log($scope.decklist);
-		});
-		$('body').on('click', '.addCard', function(e) {
-			var setcode = e.target.getAttribute('data-setcode');
-			var cardnumber = e.target.getAttribute('data-cardnumber');
-			cardnumber = parseInt(cardnumber);
-			var deck = $scope.decklist[$scope.deckName];
-			if(deck !== undefined) {
-				deck.addCards([cardnumber], setcode);
+			console.log($scope.currentDeck);
+		};
+		$scope.addCard = function(mvid) {
+			if($scope.currentDeck !== undefined) {
+				$scope.currentDeck.addCardsByMvid(mvid);
 			}
-			test(deck);
-		});
-		$('body').on('click', '#saveDeck', function(e) {
-			var deck = $scope.decklist[$scope.deckName];
+		}
+		$scope.removeCard = function(mvid) {
+			if($scope.currentDeck !== undefined) {
+				$scope.currentDeck.removeCardsByMvid(mvid);
+			}
+		}
+		$scope.changeCard = function(card) {
+			$scope.currentCard = card;
+			console.log("changing to", card);
+			$("#cardImage").sticky({topSpacing:0});	
+		}
+		$scope.saveDeck = function() {
+			var deck = $scope.currentDeck;
 			var deckObj = deck.exportDeck();
 			console.log(deckObj);
 			$.ajax({
@@ -405,12 +448,12 @@ app.controller('DeckBuildController', ['$scope', 'magic', 'decks', function($sco
 			.done(function(msg) {
 				alert("Deck Saved:" + msg);
 			});
-		});
-		$('body').on('click', '.removeCard', function(e) {
+		};
 
-		});
-}]);
-app.controller('BlockListController', ['$scope', 'magic', '$routeParams', function ($scope, magic, $routeParams) {
+
+	});
+}])
+.controller('BlockListController', ['$scope', 'magic', '$routeParams', function ($scope, magic, $routeParams) {
 	magic.success(function(data) {
 		$scope.blocks = data;
 		console.log(data);
@@ -444,10 +487,9 @@ app.controller('BlockListController', ['$scope', 'magic', '$routeParams', functi
 				blocks.CON,
 				blocks.ALA
 		]];
-		test($scope.blockList);
 	});
-}]);
-app.controller('BlockController', ['$scope', 'magic', '$routeParams', function ($scope, magic, $routeParams) {
+}])
+.controller('BlockController', ['$scope', 'magic', '$routeParams', function ($scope, magic, $routeParams) {
 		magic.success(function(data) {
 			$scope.set = data[$routeParams.blockId];
 			console.log($scope.set);
@@ -524,4 +566,4 @@ app.controller('BlockController', ['$scope', 'magic', '$routeParams', function (
 				}
 			}
 		});
-}]);
+}])

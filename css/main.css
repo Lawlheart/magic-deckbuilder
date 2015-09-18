@@ -1,4 +1,7 @@
 /*GENERAL*/
+  :root {
+  	box-sizing:border-box;
+  }
 	body {
 		background-color: #223322;
 		box-sizing:border-box;
@@ -13,18 +16,10 @@
 		margin:0;
 		padding:10px;
 	}
-	button {
-		height:40px;
-		width: 100px;
-		margin:20px;
-		color: #222;
-	}
 	select, option {
 		background-color: rgba(20,20,20,.8);
 		
 	}
-
-/*HEADER*/
 
 	.nav-title {
 	  padding-right: 0;
@@ -52,50 +47,6 @@
 	  color: #ffffff;
 	  margin-left: 10px;
 	}
-
-	header, nav {
-		padding:0;
-		margin:0;
-	}
-	nav {
-		list-style: none;
-		display: flex;
-		background-color: #333;
-		flex-direction: row;
-		flex-wrap: wrap;
-		justify-content: flex-start;
-	}
-	nav a {
-		text-decoration: none;
-		color:#ccc;
-    text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
-	}
-	nav ul {
-		display:flex;
-	}
-	nav li {
-		display:block;
-		font-size: 24px;
-		padding:6px;
-		flex: 0 1 auto;
-		background: linear-gradient(transparent, #111);
-		border-left:1px solid #444;
-		border-right: 1px solid #111;
-		border-bottom:1px solid #000;
-		border-top:1px solid #555;
-	}
-	nav li.blink {
-		background-color: green;
-		transition: 1s;
-	}
-	li.spacer {
-		flex:1 10 auto;
-	}
-	li.right {
-		align-self: flex-end;
-	}
-
-/*FOOTER*/
 	footer {
 		height:60px; 
 		padding:0;
@@ -111,56 +62,97 @@
 		text-shadow:0 1px 1px #fff;
 	}
 
+/*CARD SEARCH*/
+	#output {
+		overflow: auto;
+		min-height: 443px;
+	}
+	ul.cards {
+		margin:0;
+		padding:0;
+	}
+	.cards li {
+		list-style:none;
+		display:block;
+		float:left;
+		margin:10px;
+		width: 225px;
+	}
+	.cards img {
+		border-radius: 11px;
+		height:311px;
+	}
 
-#output {
-	overflow: auto;
-	min-height: 443px;
-}
-ul.cards {
-	margin:0;
-	padding:0;
-}
-.cards li {
-	list-style:none;
-	display:block;
-	float:left;
-	margin:10px;
-	width: 225px;
-}
-.cards img {
-	border-radius: 11px;
-	height:311px;
-}
-.cards button, .addCard, .removeCard { 
-	border: 0px;
-	width:40%;
-	margin:5px 5%;
-	padding:0;
-}
-.addCard {
-	background-color: #464;
-}
-.removeCard {
-	background-color: #633;
-}
+/*DECK VIEW*/
+	h1.manaTitle {
+		width:100%;
+		text-align: center;
+		clear:both;
+
+	}
+
+	.cmc-sort {
+	  width: 250px;
+	  float: left;
+	  clear:right;
+	}
+	.cmc-sort li {
+		height:30px;
+	}
+	.cmc-sort li:last-child {
+		height: 311px;
+	}
 
 
+/*DECK BUILDER*/
 
-h1.manaTitle {
-	width:100%;
-	text-align: center;
-	clear:both;
-
-}
-
-.cmc-sort {
-  width: 250px;
-  float: left;
-  clear:right;
-}
-.cmc-sort li {
-	height:30px;
-}
-.cmc-sort li:last-child {
-	height: 311px;
-}
+	.spinner-container {
+		height:100px;
+		width:100px;
+		padding:0;
+		margin:20px auto;
+	}
+	paper-spinner {
+		height:100px;
+		width:100px;
+		margin:0;
+		padding:0;
+	}
+	.setID {
+		background-color:black;
+		padding:4px;
+	}
+	.card {
+		list-style: none;
+		cursor:pointer;
+		display:block;
+	}
+	.set {
+		width:400px;
+	}
+	#deckbuilder .form-control {
+		background-color: #000;
+		border: 1px solid #111;
+		color: #fff;
+	}
+	#deckbuilder form {
+		background-color: #3b3b3b;
+		border-radius: 5px;
+		padding:20px;
+		margin: 20px auto;
+	}
+	#cardImage {
+		background-color: #3b3b3b;
+		border-radius: 5px;
+		float:right;
+		width:250px;
+		height:380px;
+		padding:14px;
+	}
+	#cardImage img {
+		border-radius: 10px;
+	}
+	.btn {
+		min-width: 80px;
+		margin:10px;
+	}
