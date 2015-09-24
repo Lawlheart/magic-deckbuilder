@@ -16,14 +16,13 @@
 		margin:0;
 		padding:10px;
 	}
-	select, option {
-		background-color: rgba(20,20,20,.8);
-		
+	input.form-control, select.form-control {
+		background-color: #222;
+		border-color:#333;
+		color:#fff;
 	}
-
 	.nav-title {
-	  padding-right: 0;
-	  padding-left: 0;
+	  padding: 30px;
 	  background: linear-gradient(transparent, #910000),
 	              #000 url('../img/magic.png') no-repeat center;
 	  background-size: cover;
@@ -35,7 +34,7 @@
 	  margin-bottom: 0;
 	  -webkit-font-smoothing: antialiased;
 	  text-shadow:  2px 8px 8px rgba(0, 0, 0, 0.6);
-	  color: #ffffff;
+	  color: #e0c453;
 	  font-size: 48px;  
 	  font-family: 'Shift', sans-serif;
 	  font-weight: bold;
@@ -44,7 +43,7 @@
 	  margin-top: 0;
 	  text-shadow:  1px 4px 4px rgba(0, 0, 0, 0.6);
 	  font-size: 20px;
-	  color: #ffffff;
+	  color: #e0c453;
 	  margin-left: 10px;
 	}
 	footer {
@@ -63,6 +62,13 @@
 	}
 
 /*CARD SEARCH*/
+	#magic {
+		height:300px;
+		width:400px;
+		overflow-y: scroll;
+		margin:20px;
+		float:left;
+	}
 	#output {
 		overflow: auto;
 		min-height: 443px;
@@ -84,11 +90,14 @@
 	}
 
 /*DECK VIEW*/
+	#deck-manager {
+		max-width:400px;
+		margin:auto;
+	}
 	h1.manaTitle {
 		width:100%;
 		text-align: center;
 		clear:both;
-
 	}
 
 	.cmc-sort {
@@ -131,15 +140,11 @@
 		width:400px;
 	}
 	#deckbuilder .form-control {
-		background-color: #000;
-		border: 1px solid #111;
-		color: #fff;
+
 	}
 	#deckbuilder form {
-		background-color: #3b3b3b;
-		border-radius: 5px;
-		padding:20px;
-		margin: 20px auto;
+		max-width:400px;
+		margin: 0 auto;
 	}
 	#cardImage {
 		background-color: #3b3b3b;

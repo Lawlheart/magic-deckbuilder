@@ -1,6 +1,9 @@
-			<div class="block" ng-repeat="block in blockList">
-				<h1>{{block[0].block}} Block</h1>
-				<ul ng-repeat="set in block">
-					<li><a ng-href="#/blocks/{{set.code}}">{{set.name}}</a></li>
-				</ul>
-			</div>
+<div class="well container">
+	<h3>Search by Block</h3>
+	<div class="block" ng-repeat="block in blockList">
+		<h3>{{block[0].block}} Block</h3>
+		<ul class="list-group">
+			<li class="list-group-item" ng-repeat="set in block"><a ng-href="#/blocks/{{set.code}}">{{set.name}}</a></li>
+		</ul>
+	</div>
+</div>

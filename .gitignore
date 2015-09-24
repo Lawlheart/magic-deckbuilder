@@ -2,10 +2,12 @@
 # https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
 node_modules
 bower_components
-api/node_modules
+**/node_modules
+**/bower_components
 
 # notes
-notes.txt
+notes.md
 
 # windows thumbnails
-public/img/Thumbs.db
+Thumbs.db
+**/Thumbs.db

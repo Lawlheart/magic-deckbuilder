@@ -1,6 +1,20 @@
-			<select name="Deck" id="deck">
+
+
+<div class="well text-center">
+	<form role="form" id="deck-manager" ng-show="loaded">
+		<div class="form-group row">
+			<select name="Deck" id="deck" class="form-control col-xs-12" placeholder="Pick one">
+				
 			</select>
-			<button id="draw">Draw!</button>
-			<button id="seeDeck">See Deck</button>
-			<button id="deckByCmc">Sort Deck</button>
-			<div id="output"></div>
+			<button id="draw" class="btn btn-default">Draw!</button>
+			<button id="seeDeck" class="btn btn-success">See Deck</button>
+			<button id="deckByCmc" class="btn btn-primary">Sort Deck</button>
+			<button id="deckByCmc" class="btn btn-info">Analysis</button>
+		</div>
+	</form>
+
+	<div class="spinner-container" ng-hide="loaded">
+		<paper-spinner active></paper-spinner>
+	</div>
+</div>
+<div id="output"></div>
