@@ -1,3 +1,7 @@
+var debugging = true;
+function debug(thing) {
+	if(debugging) { console.log(thing) }
+}
 angular.module('MagicApp', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
@@ -25,119 +29,370 @@ angular.module('MagicApp', ['ngRoute'])
 		redirectTo: '/'
 	});
 }])
-.factory('magic', ['$http', function($http) {
-	return $http.get('js/all-sets.json')
+.factory('$magic', ['$http', function($http) {
+	var $magic = {
+		getDecks: function() {
+			debug("getting decks")
+			return $http.get('http://198.199.95.142:6244/')
+			.success(function(data) {
+				return data
+			})
+			.error(function(err) {
+				return err
+			});
+		},
+		renderDeck: function(deck) {
+			var deckObj;
+			if(deck.type === "commander") {
+				deckObj = new $magic.Deck(deck.name, deck.type, deck.commander);
+			} else {
+				deckObj = new $magic.Deck(deck.name, deck.type);
+			}
+			if(deck.cards === undefined) {deck.cards = [];}
+			var cards = deck.cards;
+			for(var i=0;i<cards.length;i++) {
+				var mv_id = cards[i];
+				deckObj.addCardsByMvid(mv_id);
+			}
+			return deckObj;
+		},
+		getData:function() {
+			debug("getting data");
+			return $http.get('js/all-sets.json')
 			.success(function(data) {
 				database = data;
 				return data;
 			}).error(function(err) {
 				return err;
 			});
-}])
-.factory('$deck', ['$http', 'magic', '$rootScope', function($http, magic, $rootScope) {
-	var decklist = {};
-
-	var decks =  $http.get('http://198.199.95.142:6244/')
-		.success(function(data) {
-			magic.success(function(database) {
-
-				for(var j=0;j<data.length;j++) {
-					var deck = data[j];
-					var deckObj;
-					if(deck.type === "commander") {
-						deckObj = new Deck(deck.name, deck.type, deck.commander);
-					} else {
-						deckObj = new Deck(deck.name, deck.type);
+		}, 
+		cardSearch: function(search, set) {
+			debug("searching cards");
+			var cardset = database[set.toUpperCase()].cards;
+			for(var key in cardset) {
+		    if(cardset.hasOwnProperty(key)) {
+		      var card = cardset[key];
+		      if(typeof search === "string") {
+		        if(search === card.name) {
+		          return JSON.parse(JSON.stringify(card));
+		        }
+		      } else if(typeof search === "number") {
+		        if(search == card.number) {
+		          return JSON.parse(JSON.stringify(card));
+		        }
+		      }
+		    } 
+		  }
+		}, 
+		findCardByMvId: function(mv_id) {
+			debug("searching by mvid");
+			for(var key in database) {
+		    if(database.hasOwnProperty(key)) {
+		      var set = database[key];
+		      for(var cardkey in set.cards) {
+		        if(set.cards.hasOwnProperty(cardkey)) {
+		          var card = set.cards[cardkey];
+		          if(card.multiverseid === mv_id) {
+		            return card;
+		          }
+		        }
+		      }
+		    }
+			}
+		},
+		convertMana: function(card, mana, remove) {
+			debug("converting mana")
+			if(card.manaCost !== undefined) {
+				var cost = card.manaCost;
+				cost = cost.slice(1, -1);
+				cost = cost.split("}{");
+				for(var i=0;i<cost.length;i++) {
+					if(cost[i] === "G") {
+						if(!remove) {
+							mana.green += 1;
+						} else {
+							mana.green -= 1;
+						}
 					}
-					if(deck.cards === undefined) {deck.cards = [];}
-					var cards = deck.cards;
-					for(var i=0;i<cards.length;i++) {
-						var mv_id = cards[i];
-						deckObj.addCardsByMvid(mv_id);
+					if(cost[i] === "R") {
+						if(!remove) {
+							mana.red += 1;
+						} else {
+							mana.red -= 1;
+						}
 					}
-					decklist[deck.name] = deckObj;
+					if(cost[i] === "B") {
+						if(!remove) {
+							mana.black += 1;
+						} else {
+							mana.black -= 1;
+						}
+					}
+					if(cost[i] === "U") {
+						if(!remove) {
+							mana.blue += 1;
+						} else {
+							mana.blue -= 1;
+						}
+					}
+					if(cost[i] === "W") {
+						if(!remove) {
+							mana.white += 1;
+						} else {
+							mana.white -= 1;
+						}
+					}
 				}
-				$rootScope.$emit("decks-loaded", decklist);
-				console.log(decklist);
-				return decklist;
-			});
-		}).error(function(err) {
-			return err;
-		});
+				return mana;
+			}
+		},
+		Deck: function(name, type, commander) {
+			this.name = name;
+			this.deckType = type;
+			this.commander = commander;
+			this.deckList = [];
+			this.cards = {};
+			this.cardCount = 0;
+			this.distribution = {
+				Creature: 0,
+				Land: 0,
+				Other: 0
+			};
+			this.manaCounts = {
+				green: 0,
+				red: 0,
+				black: 0,
+				blue: 0,
+				white: 0
+			};
+			this.addCards = function(numbers, set, quantity) {
+				//iterate over each card number
+				debug("Deck: adding cards");
+				for(var i=0; i<numbers.length; i++ ) {
+					var number = numbers[i];
+					if(quantity === undefined) { quantity = 1; }
 
-	return {
-		get:function(callback) {
-			return decklist;
+					//gets card object from JSON database
+					var card = $magic.cardSearch(number, set);
+
+					// create card object for this.cards
+					this.cards[card.name] = card;
+					this.cards[card.name].quantity = quantity;
+
+					//add to this.cardCount
+					this.cardCount += card.quantity;
+
+					// add to this.manaCounts
+					$magic.convertMana(card, this.manaCounts);
+
+					//add to this.distribution
+					var types = typeof card.types === "string" ? card.types : card.types.join("_");
+					if(types === "Creature" || types === "Land"){
+						this.distribution[types] += card.quantity;
+					} else {
+						this.distribution.Other += card.quantity;
+					}
+
+					//add to this.deckList
+					for(var j=0;j<quantity;j++) {
+						this.deckList.push(card.name);
+					}
+				}
+			};
+			this.addCardsByMvid = function(mv_id) {
+				debug("Deck: adding cards by mvid");
+				var card = $magic.findCardByMvId(mv_id);
+				// create card object for this.cards
+				
+				if(this.cards[card.name] === undefined) {
+					this.cards[card.name] = card; 
+					this.cards[card.name].quantity = 1;
+				} else {
+					this.cards[card.name].quantity += 1;
+				}
+
+				//add to this.cardCount
+				this.cardCount += 1;
+
+				// add to this.manaCounts
+				$magic.convertMana(card, this.manaCounts);
+
+				//add to this.distribution
+				var types = typeof card.types === "string" ? card.types : card.types.join("_");
+				if(types === "Creature" || types === "Land"){
+					this.distribution[types] += 1;
+				} else {
+					this.distribution.Other += 1;
+				}
+
+				//add to this.deckList
+				this.deckList.push(card.name);
+			};
+			this.removeCardsByMvid = function(mv_id) {
+				debug("Deck: removing cards by MVID");
+				var card = $magic.findCardByMvId(mv_id);
+				if(this.cards[card.name] === undefined) {
+					return
+				}
+				if(this.cards[card.name].quantity >= 2) {
+					this.cards[card.name].quantity -= 1;
+				} else if(this.cards[card.name].quantity === 1) {
+					delete this.cards[card.name];
+				}
+				this.cardCount -= 1;
+				$magic.convertMana(card, this.manaCounts, true);
+				var types = typeof card.types === "string" ? card.types : card.types.join("_");
+				if(types === "Creature" || types === "Land"){
+					this.distribution[types] -= 1;
+				} else {
+					this.distribution.Other -= 1;
+				}
+				var index = this.deckList.indexOf(card.name);
+				this.deckList.splice(index, 1);
+			};
+			this.draw = function(drawCount) {
+				debug("Deck: drawing cards");
+				var deck = this.deckList;
+				//removes the commander from the deck
+				if(this.deckType === "commander") {
+					var index = deck.indexOf(this.commander);
+					deck = deck.slice(0,index).concat(deck.slice(index+1));
+				}
+				//randomizes the deck
+				var shuffledDeck = [];
+				var deckSize = deck.length;
+				for(var i=0;i<deckSize;i++) {
+					var random = Math.floor(Math.random()*deck.length);
+					shuffledDeck.push(deck[random]);
+					deck = deck.slice(0,random).concat(deck.slice(random+1));
+				}
+				//draws cards
+				var cardDraw = shuffledDeck.slice(0,drawCount);
+				return cardDraw;
+			};
+			this.renderCards = function(cards) {
+
+				debug("Deck: rendering cards");
+				var HTML = '<ul class="cards">';
+				for(var i=0;i<cards.length;i++) {
+					var card = this.cards[cards[i]];
+					HTML +="<li><img src='http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card' alt='" + card.name + "'></li>";
+				}
+				HTML += "</ul>";
+				return HTML;
+			};
+			this.deckByCmc = function() {
+
+				debug("Deck: calculating CMC");
+				var deck = this.deckList;
+				var HTML = "";
+				for(var mana = 1;mana<9;mana++) {
+					HTML += "<div class='cmc-sort'>";
+					HTML += '<h1 class="manaTitle">Mana Cost: ' + mana + '</h1>';
+					var sorted = [];
+					for(var i=0;i<deck.length;i++) {
+						var card = this.cards[deck[i]];
+						if(card.cmc === mana) {
+							sorted.push(deck[i]);
+						}
+					}
+					HTML += this.renderCards(sorted);
+					HTML += "</div>";
+				}
+				return HTML;
+			};
+			this.renderManaCurve = function() {
+
+				debug("Deck: calculating mana curve");
+				var curve = {};
+				var totalMana = 0;
+				var totalCards = 0;
+				for(var key in this.cards) {
+		      if(this.cards.hasOwnProperty(key)) {
+		        var card = this.cards[key];
+		        if(curve[card.cmc] !== undefined && card.cmc !== undefined) {
+		          curve[card.cmc] += card.quantity;
+		          totalMana += card.cmc;
+		          totalCards ++;
+		        } else if(card.cmc !== undefined) {
+		          curve[card.cmc] = card.quantity;
+		          totalMana += card.cmc;
+		          totalCards ++;
+		        }
+		    	}
+				}
+				var average = totalMana/totalCards;
+				console.log("Mana Curve: ", curve);
+				console.log("Average CMC: " + average);
+				return curve;
+			};
+			this.exportDeck = function() {
+
+				debug("Deck: Exporting deck");
+				var deck = {};
+				deck.name = this.name;
+				deck.type = this.deckType;
+				deck.commander = this.commander;
+				deck.cards = [];
+				for(var key in this.cards) {
+		      if(this.cards.hasOwnProperty(key)) {
+		        deck.cards.push(this.cards[key].multiverseid);
+		    	}
+				}
+				return deck;
+			};
 		}
-	};
+	}
+	return $magic;
 }])
 .controller('MainController', ['$scope', function($scope) {
 	$('paper-tabs').prop("selected", 0);
 }])
-.controller('DeckController', ['$scope', '$deck', 'magic', '$rootScope', function ($scope, $deck, magic, $rootScope) {
-		$('paper-tabs').prop("selected", 1);
-		$scope.decklist = $deck.get();
-		var decklist = $scope.decklist;
-		var deck;
-		function renderList() {
-			for(var deck in decklist) {
-        if(decklist.hasOwnProperty(deck)){
-        	var deckName = decklist[deck].name;
-          var $option = $('<option></option>');
-          $option.html(deckName);
-          $option.val(deck);
-          $option.appendTo($('#deck'));
-          $('#deck option:first-child').attr('selected', true);
-      	}
-			}
-		}
-		function loadDeck() {
-			if($('#deck option:selected').val() !== undefined) {
-	    	var selectedDeck = $('#deck option:selected').val();	
-				deck = decklist[selectedDeck];
-				console.log(deck);
-				deck.renderManaCurve();
-				console.log("Mana Counts:",deck.manaCounts);
-				console.log("Card Count:" + deck.cardCount);
-			}			
-		}
-		if(!$scope.loaded) {
-			renderList();
-			loadDeck();
-		}
-		$rootScope.$on('decks-loaded', function(){
-			renderList();
-			loadDeck();
+.controller('DeckController', ['$scope', '$magic', function ($scope, $magic) {
+	$('paper-tabs').prop("selected", 1);
+	debug('start deck load');
+	$magic.getData().success(function(database) {
+		$magic.getDecks().success(function(data) {
+			$scope.step = 1;
 			$scope.loaded = true;
-  	});
-		$('#deck').change(function() {
-				loadDeck();
+			console.log(data);
+			$scope.decklist = data;	
+
+			$scope.selectDeck = function(deck) {
+				$scope.deck = $magic.renderDeck(deck);
+				debug($scope.deck)
+				$scope.step = 2;
+			}
+			$scope.draw = function(num) {
+				debug($scope.deck.draw(num))
+				var HTML = $scope.deck.renderCards($scope.deck.draw(num));
+				$('#output').html(HTML);
+			}
+			$scope.showDeck = function() {
+				var HTML = $scope.deck.renderCards($scope.deck.deckList);
+				$('#output').html(HTML);
+			}
+			$scope.showCurve = function() {
+				var HTML = $scope.deck.deckByCmc()
+				$('#output').html(HTML);
+			}
+
 		});
-		$('#draw').click(function() {
-			var HTML = deck.renderCards(deck.draw(7));
-			$('#output').html(HTML);
-		});
-		$('#seeDeck').click(function() {
-			var HTML = deck.renderCards(deck.deckList);
-			$('#output').html(HTML);
-		});
-		$('#deckByCmc').click(function() {
-			var HTML = deck.deckByCmc();
-			$('#output').html(HTML);
-		});
+	});
 }])
-.controller('DeckBuildController', ['$scope', 'magic', '$deck', function($scope, magic, $deck) {
+.controller('DeckBuildController', ['$scope', '$magic', function($scope, $magic) {
 	$('paper-tabs').prop("selected", 3);
 	$scope.debug = false;
 	$scope.step = 0;
 	$scope.newDeck = {name: "", type: ""};
 	$scope.currentDeck = {};
 	$scope.currentCard;
-	magic.success(function(data) {
+	$magic.getData().success(function(data) {
 		$scope.step = 1;
 		$scope.magic = data;
 		// filters set by cards legal in standard, modern, and commander
 		for(var key in data) {
+			debug("looping to sort sets")
       	if(data.hasOwnProperty(key)) {
       	var releaseDate = new Date(data[key].releaseDate);
         if( releaseDate > new Date('2003-10-01') && (data[key].type === "expansion"||data[key].type === "core" || data[key].type === "commander" || data[key].type === "duel deck") ) {
@@ -146,16 +401,18 @@ angular.module('MagicApp', ['ngRoute'])
     	}
 		}
 
-		$scope.decklist = $deck.get();
-		$scope.selectDeck = function(name) {
-			console.log(name)
-			$scope.currentDeck = $scope.decklist[name];
-			console.log($scope.currentDeck)
+		$magic.getDecks().success(function(data) {
+			$scope.decklist = data;
+		});
+		$scope.selectDeck = function(index) {
+			debug($scope.decklist)
+			$scope.currentDeck = $magic.renderDeck($scope.decklist[index]);
+			debug($scope.currentDeck)
 			$scope.step = 2;
 		}
 		$scope.makeDeck = function() {
 			if($scope.decklist[$scope.newDeck.name] === undefined) {
-				var deck = new Deck($scope.newDeck.name, $scope.newDeck.type, $scope.newDeck.commander);
+				var deck = new $magic.Deck($scope.newDeck.name, $scope.newDeck.type, $scope.newDeck.commander);
 				$scope.decklist[$scope.newDeck.name] = deck;
 				$scope.currentDeck = deck;
 				$scope.step = 2;
@@ -198,9 +455,9 @@ angular.module('MagicApp', ['ngRoute'])
 
 	});
 }])
-.controller('BlockListController', ['$scope', 'magic', '$routeParams', function ($scope, magic, $routeParams) {
+.controller('BlockListController', ['$scope', '$magic', '$routeParams', function ($scope, $magic, $routeParams) {
 	$('paper-tabs').prop("selected", 2);
-	magic.success(function(data) {
+	$magic.getData().success(function(data) {
 		$scope.blocks = data;
 		console.log(data);
 		var blocks = $scope.blocks;
@@ -235,9 +492,9 @@ angular.module('MagicApp', ['ngRoute'])
 		]];
 	});
 }])
-.controller('BlockController', ['$scope', 'magic', '$routeParams', function ($scope, magic, $routeParams) {
+.controller('BlockController', ['$scope', '$magic', '$routeParams', function ($scope, $magic, $routeParams) {
 		$('paper-tabs').prop("selected", 2);
-		magic.success(function(data) {
+		$magic.getData().success(function(data) {
 			$scope.set = data[$routeParams.blockId];
 			console.log($scope.set);
 
@@ -253,7 +510,7 @@ angular.module('MagicApp', ['ngRoute'])
 			//event handler for mana type checkboxes
 			$('#search input').click(function() {
 				console.log(searchParameters());
-				cardSearch(searchParameters());
+				cardFilter(searchParameters());
 			});
 
 			//retrieves checked boxes and returns an object representing the search parameters
@@ -267,7 +524,7 @@ angular.module('MagicApp', ['ngRoute'])
 				return search;
 			}
 
-			function cardSearch(searchParameters) {
+			function cardFilter(searchParameters) {
 				var $cards = $('.card');
 				$cards.hide();
 

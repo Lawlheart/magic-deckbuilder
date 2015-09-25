@@ -17,7 +17,7 @@
 					<label for="deck">Deck Name</label>
 					<select name="deck" ng-model="deckIndex" class="form-control">
 						<option value='' disabled selected style='display:none;'>Choose a Deck</option>
-						<option value="{{deck.name}}" ng-repeat="deck in decklist">{{deck.name}}</option>
+						<option value="{{$index}}" ng-repeat="deck in decklist">{{deck.name}}</option>
 					</select>
 				</div>
 				<div class="form-group">
@@ -45,7 +45,7 @@
 					<input name="commanderName "type="text" ng-model="commanderName" ng-show="newDeck.type==='commander'" class="form-control">
 				</div>
 				<div class="form-group">
-					<input type="button" class="btn btn-primary" ng-click="makeDeck()" value="New Deck" class="form-control"></input>
+					<input type="button" class="btn btn-primary" ng-click="makeDeck()" value="New Deck" class="form-control" ng-disabled="!newDeck.name || !newDeck.type || (newDeck.type === 'commander' && !commanderName)"></input>
 					<input type="button" class="btn btn-info" ng-click="loadDeck=true" value="Load Deck">
 				</div>
 			</div>

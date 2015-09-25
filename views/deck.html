@@ -1,20 +1,33 @@
 
 
-<div class="well text-center">
-	<form role="form" id="deck-manager" ng-show="loaded">
-		<div class="form-group row">
-			<select name="Deck" id="deck" class="form-control col-xs-12" placeholder="Pick one">
-				
-			</select>
-			<button id="draw" class="btn btn-default">Draw!</button>
-			<button id="seeDeck" class="btn btn-success">See Deck</button>
-			<button id="deckByCmc" class="btn btn-primary">Sort Deck</button>
-			<button id="deckByCmc" class="btn btn-info">Analysis</button>
-		</div>
-	</form>
+<div class="well text-center row" ng-switch="step">
 
-	<div class="spinner-container" ng-hide="loaded">
-		<paper-spinner active></paper-spinner>
+	<div ng-switch-when="1">
+		<h3>Decks</h1>
+		<div class="col-sm-6" ng-repeat="deck in decklist">
+			<button class="btn btn-default btn-lg btn-block" ng-click="selectDeck(deck)">
+				<span class="label label-success pull-left" style="position:relative; top:2px">{{deck.type}}</span>
+				<span>{{deck.name}}</span>
+				<span class="badge pull-right" style="position:relative; top:2px">{{deck.cards.length}}</span>
+			</button>
+		</div>
 	</div>
+
+	<div ng-switch-when="2">
+			<h3>{{deck.name}}</h3>
+			<button class="btn btn-default" ng-click="draw(7)">Draw!</button>
+			<button class="btn btn-success" ng-click="showDeck()">Show Deck</button>
+			<button class="btn btn-primary" ng-click="showCurve()">Sort Deck</button>
+			<button class="btn btn-info" ng-click="">Analysis</button>
+	</div>
+
+</div>
+
+
+<div class="spinner-container" ng-show="!loaded">
+	<paper-spinner active></paper-spinner>
 </div>
 <div id="output"></div>
+
+
+			
