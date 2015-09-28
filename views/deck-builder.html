@@ -37,6 +37,7 @@
 				<div class="form-group">
 					<label for="deckType">Deck Type</label>
 					<select name="deckType" id="deckType" ng-model="newDeck.type" class="form-control">
+						<option value='' disabled selected style='display:none;'>Choose a Format</option>
 						<option value="commander">Commander</option>
 						<option value="standard">Standard</option>
 						<option value="modern">Modern</option>
@@ -68,6 +69,7 @@
 				<label for="setSearch">Set</label>
 				<select name="setSearch" ng-model="setSearch" ng-change="filterBySet(setSearch)" class="form-control">
 					<option value='' disabled selected style='display:none;'>Filter by Set</option>
+					<option value="" >All Sets</option>
 					<option ng-repeat="set in magic" value="{{set.name}}">{{set.name}}</option>
 				</select>
 				<input type="button" class="btn btn-default" ng-click="saveDeck()" value="Save Deck"></input>
@@ -87,7 +89,7 @@
 		<section id="magic">
 			<div ng-repeat="set in magic | orderBy: '-releaseDate' | filter:setSearch | limitTo:5 " ng-show="search.length > 2">
 				<ul class="set" ng-show="!setFilter || setFilter === set.name">
-					<li class="card" ng-repeat="card in set.cards | filter:search | limitTo:10" ng-click="changeCard(card)"><span class="setID">{{set.code}}</span> {{card.name}}: {{card.manaCost}}</li>
+					<li class="card" ng-repeat="card in set.cards | filter:search" ng-click="changeCard(card)"><span class="setID">{{set.code}}</span> {{card.name}}: {{card.manaCost}}</li>
 				</ul>
 			</div>
 		</section>

@@ -31,6 +31,15 @@ angular.module('MagicApp', ['ngRoute'])
 }])
 .factory('$magic', ['$http', function($http) {
 	var $magic = {
+		getLegality: function() {
+			return $http.get('js/data/legality.json')
+			.success(function(data) {
+				return data;
+			})
+			.error(function(err) {
+				return err
+			});
+		},
 		getDecks: function() {
 			debug("getting decks")
 			return $http.get('http://198.199.95.142:6244/')
@@ -49,6 +58,7 @@ angular.module('MagicApp', ['ngRoute'])
 				deckObj = new $magic.Deck(deck.name, deck.type);
 			}
 			if(deck.cards === undefined) {deck.cards = [];}
+			if(deck.commander === undefined) { delete deck.commander}
 			var cards = deck.cards;
 			for(var i=0;i<cards.length;i++) {
 				var mv_id = cards[i];
@@ -58,7 +68,7 @@ angular.module('MagicApp', ['ngRoute'])
 		},
 		getData:function() {
 			debug("getting data");
-			return $http.get('js/all-sets.json')
+			return $http.get('js/data/all-sets.json')
 			.success(function(data) {
 				database = data;
 				return data;
@@ -327,12 +337,13 @@ angular.module('MagicApp', ['ngRoute'])
 				return curve;
 			};
 			this.exportDeck = function() {
-
 				debug("Deck: Exporting deck");
 				var deck = {};
 				deck.name = this.name;
 				deck.type = this.deckType;
-				deck.commander = this.commander;
+				if(this.commander !== undefined) {
+					deck.commander = this.commander;
+				}
 				deck.cards = [];
 				for(var key in this.cards) {
 		      if(this.cards.hasOwnProperty(key)) {
@@ -390,32 +401,46 @@ angular.module('MagicApp', ['ngRoute'])
 	$magic.getData().success(function(data) {
 		$scope.step = 1;
 		$scope.magic = data;
-		// filters set by cards legal in standard, modern, and commander
-		for(var key in data) {
-			debug("looping to sort sets")
-      	if(data.hasOwnProperty(key)) {
-      	var releaseDate = new Date(data[key].releaseDate);
-        if( releaseDate > new Date('2003-10-01') && (data[key].type === "expansion"||data[key].type === "core" || data[key].type === "commander" || data[key].type === "duel deck") ) {
-          $scope.magic[key] = data[key];
-        }
-    	}
-		}
 
 		$magic.getDecks().success(function(data) {
 			$scope.decklist = data;
 		});
+		//filters by legal cards and cards with multiverseID
+		$scope.legalityFilter = function(legality) {
+			$magic.getLegality().success(function(data) {
+				var legalCards = data[legality];
+				for(key in $scope.magic) {
+					if($scope.magic.hasOwnProperty(key)) {
+						var set = $scope.magic[key];
+						set.cards = set.cards.filter(function(card) {
+							return legalCards.indexOf(card.name) >= 0 && card.multiverseid !== undefined;
+						})
+						if(set.cards.length === 0) {
+							delete $scope.magic[key]
+						}
+					}
+				}				
+				$scope.step = 2;
+			})
+			.error(function(err) {
+				return err
+			})
+		}
 		$scope.selectDeck = function(index) {
 			debug($scope.decklist)
 			$scope.currentDeck = $magic.renderDeck($scope.decklist[index]);
 			debug($scope.currentDeck)
-			$scope.step = 2;
+			$scope.step = 0;
+			$scope.legalityFilter($scope.currentDeck.deckType);
 		}
 		$scope.makeDeck = function() {
 			if($scope.decklist[$scope.newDeck.name] === undefined) {
 				var deck = new $magic.Deck($scope.newDeck.name, $scope.newDeck.type, $scope.newDeck.commander);
 				$scope.decklist[$scope.newDeck.name] = deck;
 				$scope.currentDeck = deck;
-				$scope.step = 2;
+				$scope.step = 0;
+				$scope.legalityFilter($scope.currentDeck.deckType);
+
 			} else {
 				alert($scope.deckName + " already exists");
 			}
