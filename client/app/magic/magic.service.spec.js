@@ -29,7 +29,18 @@ describe('Service: magic', function () {
       var deck = new magic.Deck('test', 'standard')
       expect(deck.name).toBe('test');
       expect(deck.type).toBe('standard');
+      expect(deck.cards).toBe({});
     });
+
+    describe('The addCards method', function() {
+
+      it('should add cards properly given a multiverseid', function() {
+        var deck = new magic.Deck('test', 'standard')
+        deck.addCards([236504, 369045])
+        expect(deck.cards.length).toBe(2);
+      })
+
+    })
 
   });
 
