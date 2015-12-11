@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('magicFullstackApp')
+angular.module('magicApp')
   .controller('LoginCtrl', function ($scope, Auth, $location, $window) {
     $scope.user = {};
     $scope.errors = {};

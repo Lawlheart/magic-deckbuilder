@@ -1,0 +1,61 @@
+/************************************
+DECKBUILDER PAGE
+*************************************/
+.deck-box {
+	float:left;
+	margin-left:20px;
+	width:calc(100% - 270px);
+}
+
+#results, #deck {
+	max-height:320px;
+	overflow: auto;
+}
+
+#results .list-group-item, #deck .list-group-item {
+  background-color: #111;
+  color:#fff;
+	border-color:#262626;
+	padding:5px 15px;
+	cursor:pointer;
+}
+#cardImage {
+	background-color: #3b3b3b;
+	border-radius: 5px;
+	float:right;
+	width:250px;
+	height:380px;
+	padding:14px;
+}
+#cardImage img {
+	border-radius: 10px;
+}
+.btn {
+	min-width: 80px;
+	margin:10px;
+}
+.current-deck .well, .modal-content .well {
+	background: linear-gradient(#333, #111);
+	border-color: #111;
+}
+.modal-content .well {
+	cursor: pointer;
+}
+.deck-title {
+	display: inline;
+}
+.title-text {
+	padding-left:20px;
+}
+.badge {
+	font-size: 75%;
+}
+.modal-content {
+	padding:20px;
+	background-color: #222;
+	color:#fff;
+}
+
+.modal-content .btn-success {
+	margin-left:0px;
+}

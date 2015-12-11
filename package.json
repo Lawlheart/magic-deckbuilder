@@ -1,5 +1,5 @@
 {
-  "name": "magic-fullstack",
+  "name": "magic",
   "version": "0.0.0",
   "main": "server/app.js",
   "dependencies": {
@@ -17,6 +17,7 @@
     "lodash": "~2.4.1",
     "method-override": "~1.0.0",
     "mongoose": "~4.0.3",
+    "mongoose-search-plugin": "^0.1.2",
     "morgan": "~1.0.0",
     "passport": "~0.2.0",
     "passport-github": "^1.0.0",
@@ -75,6 +76,7 @@
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-requirejs": "~0.2.1",
     "karma-script-launcher": "~0.1.0",
+    "karma-spec-reporter": "0.0.21",
     "open": "~0.0.4",
     "requirejs": "~2.1.11",
     "should": "~3.3.1",

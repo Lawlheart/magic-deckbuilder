@@ -1,10 +1,13 @@
 'use strict';
 
-angular.module('magicFullstackApp')
+angular.module('magicApp')
   .controller('NavbarCtrl', function ($scope, $location, Auth) {
     $scope.menu = [{
       'title': 'Home',
       'link': '/'
+    }, {
+      'title': 'Deckbuilder',
+      'link': '/build'
     }];
 
     $scope.isCollapsed = true;

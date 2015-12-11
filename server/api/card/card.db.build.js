@@ -1,9 +1,11 @@
 var fs = require('fs');;
-var sets = require('../../common/allSets.json');
+var sets = require('../../allSets.json');
 var mongoose = require('mongoose');
+var searchPlugin = require('mongoose-search-plugin');
 var Schema = mongoose.Schema;
 
 // mongoose.connect('mongodb://lawliet:answeris42@ds039504.mongolab.com:39504/mtg');
+mongoose.connect('mongodb://localhost/magic');
 
 var CardSchema = new Schema({
 	_id: Number,
@@ -18,6 +20,10 @@ var CardSchema = new Schema({
 	types: Array
 }, {strict: false});
 
+CardSchema.plugin(searchPlugin, {
+    fields: ['name', 'types', 'subtypes', 'supertypes']
+  });
+
 var Card = mongoose.model('Card', CardSchema);
 
 function create(card) {
@@ -25,7 +31,6 @@ function create(card) {
 		if(err) {
 			console.log(err)
 		}
-		console.log(card)
 	})
 }
 

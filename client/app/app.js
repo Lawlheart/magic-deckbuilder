@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('magicFullstackApp', [
+angular.module('magicApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',

@@ -3,7 +3,7 @@
 /**
  * Removes server error when user updates input
  */
-angular.module('magicFullstackApp')
+angular.module('magicApp')
   .directive('mongooseError', function () {
     return {
       restrict: 'A',

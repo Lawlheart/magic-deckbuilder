@@ -23,7 +23,10 @@ exports.show = function(req, res) {
 // Creates a new deck in the DB.
 exports.create = function(req, res) {
   Deck.create(req.body, function(err, deck) {
-    if(err) { return handleError(res, err); }
+    if(err) { 
+      console.log(err);
+      return handleError(res, err); 
+    }
     return res.status(201).json(deck);
   });
 };
@@ -34,7 +37,7 @@ exports.update = function(req, res) {
   Deck.findById(req.params.id, function (err, deck) {
     if (err) { return handleError(res, err); }
     if(!deck) { return res.status(404).send('Not Found'); }
-    var updated = _.merge(deck, req.body);
+    var updated = _.extend(deck, req.body);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(deck);

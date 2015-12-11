@@ -11,6 +11,16 @@ exports.index = function(req, res) {
   });
 };
 
+//searches cards db
+exports.search = function(req, res) {
+  Card.search(req.query.search, {name: 1}, {
+      limit: 500,
+    }, function(err, cards) {
+      if(err) { return handleError(res, err); }
+      return res.status(200).json(cards)
+  })
+}
+
 // Get a single card
 exports.show = function(req, res) {
   Card.findById(req.params.id, function (err, card) {
@@ -34,7 +44,7 @@ exports.update = function(req, res) {
   Card.findById(req.params.id, function (err, card) {
     if (err) { return handleError(res, err); }
     if(!card) { return res.status(404).send('Not Found'); }
-    var updated = _.merge(card, req.body);
+    var updated = _.extend(card, req.body);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(card);

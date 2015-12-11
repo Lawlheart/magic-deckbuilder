@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('magicFullstackApp')
+angular.module('magicApp')
   .controller('AdminCtrl', function ($scope, $http, Auth, User) {
 
     // Use the User $resource to fetch all users

@@ -34,7 +34,7 @@ exports.update = function(req, res) {
   Set.findById(req.params.id, function (err, set) {
     if (err) { return handleError(res, err); }
     if(!set) { return res.status(404).send('Not Found'); }
-    var updated = _.merge(set, req.body);
+    var updated = _.extend(set, req.body);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(set);

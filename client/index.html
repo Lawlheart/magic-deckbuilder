@@ -16,24 +16,26 @@
       <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
       <!-- endbower -->
     <!-- endbuild -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,700' rel='stylesheet' type='text/css'>
     <!-- build:css({.tmp,client}) app/app.css -->
     <link rel="stylesheet" href="app/app.css">
       <!-- injector:css -->
       <link rel="stylesheet" href="app/account/login/login.css">
       <link rel="stylesheet" href="app/admin/admin.css">
       <link rel="stylesheet" href="app/app.css">
+      <link rel="stylesheet" href="app/build/build.css">
       <link rel="stylesheet" href="app/main/main.css">
       <link rel="stylesheet" href="components/modal/modal.css">
       <!-- endinjector -->
     <!-- endbuild -->
   </head>
-  <body ng-app="magicFullstackApp">
+  <body ng-app="magicApp">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div ng-view=""></div>
+    <div ng-view="" class="content-wrapper"></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
     <script>
@@ -64,6 +66,7 @@
       <script src="bower_components/angular-socket-io/socket.js"></script>
       <!-- endbower -->
       <script src="socket.io-client/socket.io.js"></script>
+      <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <!-- endbuild -->
 
         
@@ -77,6 +80,8 @@
           <script src="app/account/signup/signup.controller.js"></script>
           <script src="app/admin/admin.controller.js"></script>
           <script src="app/admin/admin.js"></script>
+          <script src="app/build/build.controller.js"></script>
+          <script src="app/build/build.js"></script>
           <script src="app/magic/magic.service.js"></script>
           <script src="app/main/main.controller.js"></script>
           <script src="app/main/main.js"></script>

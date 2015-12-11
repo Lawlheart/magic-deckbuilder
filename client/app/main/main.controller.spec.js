@@ -3,7 +3,7 @@
 describe('Controller: MainCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('magicFullstackApp'));
+  beforeEach(module('magicApp'));
   beforeEach(module('socketMock'));
 
   var MainCtrl,

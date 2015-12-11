@@ -5,8 +5,9 @@
   border-color: #0271bf;
 }
 
-.btn-github {
+.btn-github, .btn-login {
   color: #fff;
-  background-color: #fafafa;
+  background-color: #ababab;
   border-color: #ccc;
 }
+

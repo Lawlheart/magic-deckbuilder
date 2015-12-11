@@ -1,7 +1,8 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    searchPlugin = require('mongoose-search-plugin');
 
 var CardSchema = new Schema({
 	_id: Number,
@@ -15,5 +16,9 @@ var CardSchema = new Schema({
 	type: String,
 	types: Array
 }, {strict: false});
+
+CardSchema.plugin(searchPlugin, {
+  fields: ['name', 'types', 'subtypes', 'supertypes']
+});
 
 module.exports = mongoose.model('Card', CardSchema);
