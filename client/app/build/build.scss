@@ -1,0 +1,54 @@
+.deck-box {
+	float: left;
+	margin-left: 20px;
+	width: 800px
+}
+.btn {
+	min-width: 80px;
+	margin:10px;
+}
+
+#results, #deck {
+	max-height: 320px;
+	overflow: auto;
+	.list-group-item {
+	  background-color: #111;
+	  color:#fff;
+		border-color:#262626;
+		padding:5px 15px;
+		cursor:pointer;
+	}
+}
+#cardImage {
+	background-color: #3b3b3b;
+	border-radius: 5px;
+	float:right;
+	width:250px;
+	height:380px;
+	padding:14px;
+	img {
+		border-radius: 10px;
+	}
+}
+
+
+
+.modal-content, .current-deck {
+	padding:20px;
+	background-color: #222;
+	color:#fff;
+	.well {
+		cursor: pointer;
+		background: linear-gradient(#333, #111);
+		border-color: #111; 
+		.deck-title {
+			display: inline; }
+		.title-text {
+			padding-left: 20px; }
+		.badge {
+			font-size: 75%; }
+	}
+	.btn-success {
+		margin-left:0px;
+	}
+}
