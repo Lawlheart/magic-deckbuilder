@@ -198,7 +198,7 @@ gulp.task('inject', cb => {
 gulp.task('inject:js', () => {
     return gulp.src(paths.client.mainView)
         .pipe(plugins.inject(
-            gulp.src(_.union(paths.client.scripts, [`!${clientPath}/**/*.{spec,mock}.js`, `!${clientPath}/app/app.js`, "${clientPath}/bower_components/jquery/dist/jquery.js"]), {read: false})
+            gulp.src(_.union(paths.client.scripts, [`!${clientPath}/**/*.{spec,mock}.js`, `!${clientPath}/app/app.js`]), {read: false})
                 .pipe(plugins.sort(sortModulesFirst)),
             {
                 starttag: '<!-- injector:js -->',
@@ -397,10 +397,8 @@ gulp.task('wiredep:client', () => {
         .pipe(wiredep({
             exclude: [
                 /bootstrap-sass-official/,
-                /bootstrap.js/,
                 /json3/,
                 /es5-shim/,
-                /bootstrap.css/,
                 /font-awesome.css/
             ],
             ignorePath: clientPath
@@ -413,10 +411,8 @@ gulp.task('wiredep:test', () => {
         .pipe(wiredep({
             exclude: [
                 /bootstrap-sass-official/,
-                /bootstrap.js/,
                 '/json3/',
                 '/es5-shim/',
-                /bootstrap.css/,
                 /font-awesome.css/
             ],
             devDependencies: true
@@ -504,18 +500,21 @@ gulp.task('constant', function() {
 
 gulp.task('build:images', () => {
     return gulp.src(paths.client.images)
-        .pipe(plugins.imagemin({
-            optimizationLevel: 5,
-            progressive: true,
-            interlaced: true
-        }))
-        .pipe(plugins.rev())
         .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets/images`))
-        .pipe(plugins.rev.manifest(`${paths.dist}/${clientPath}/assets/rev-manifest.json`, {
-            base: `${paths.dist}/${clientPath}/assets`,
-            merge: true
-        }))
-        .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets`));
+
+    // return gulp.src(paths.client.images)
+    //     .pipe(plugins.imagemin({
+    //         optimizationLevel: 5,
+    //         progressive: true,
+    //         interlaced: true
+    //     }))
+    //     .pipe(plugins.rev())
+    //     .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets/images`))
+    //     .pipe(plugins.rev.manifest(`${paths.dist}/${clientPath}/assets/rev-manifest.json`, {
+    //         base: `${paths.dist}/${clientPath}/assets`,
+    //         merge: true
+    //     }))
+    //     .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets`));
 });
 
 gulp.task('copy:extras', () => {
