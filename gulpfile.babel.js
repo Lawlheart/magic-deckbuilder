@@ -1,4 +1,4 @@
-// Generated on 2016-01-20 using generator-angular-fullstack 3.3.0-beta.0
+// Generated on 2016-04-01 using generator-angular-fullstack 3.5.0
 'use strict';
 
 import _ from 'lodash';
@@ -14,6 +14,7 @@ import nodemon from 'nodemon';
 import {Server as KarmaServer} from 'karma';
 import runSequence from 'run-sequence';
 import {protractor, webdriver_update} from 'gulp-protractor';
+import {Instrumenter} from 'isparta';
 
 var plugins = gulpLoadPlugins();
 var config;
@@ -37,7 +38,10 @@ const paths = {
         bower: `${clientPath}/bower_components/`
     },
     server: {
-        scripts: [`${serverPath}/**/!(*.spec|*.integration).js`],
+        scripts: [
+          `${serverPath}/**/!(*.spec|*.integration).js`,
+          `!${serverPath}/config/local.env.sample.js`
+        ],
         json: [`${serverPath}/**/*.json`],
         test: {
           integration: [`${serverPath}/**/*.integration.js`, 'mocha.global.js'],
@@ -127,15 +131,16 @@ let styles = lazypipe()
 
 let transpileClient = lazypipe()
     .pipe(plugins.sourcemaps.init)
-    .pipe(plugins.babel, {
-        optional: ['es7.classProperties']
-    })
+    .pipe(plugins.babel)
     .pipe(plugins.sourcemaps.write, '.');
 
 let transpileServer = lazypipe()
     .pipe(plugins.sourcemaps.init)
     .pipe(plugins.babel, {
-        optional: ['runtime']
+        plugins: [
+            'transform-class-properties',
+            'transform-runtime'
+        ]
     })
     .pipe(plugins.sourcemaps.write, '.');
 
@@ -149,8 +154,8 @@ let mocha = lazypipe()
     });
 
 let istanbul = lazypipe()
-    .pipe(plugins.babelIstanbul.writeReports)
-    .pipe(plugins.babelIstanbul.enforceThresholds, {
+    .pipe(plugins.istanbul.writeReports)
+    .pipe(plugins.istanbulEnforcer, {
         thresholds: {
             global: {
                 lines: 80,
@@ -158,7 +163,9 @@ let istanbul = lazypipe()
                 branches: 80,
                 functions: 80
             }
-        }
+        },
+        coverageDirectory: './coverage',
+        rootDirectory : ''
     });
 
 /********************
@@ -227,8 +234,6 @@ gulp.task('inject:scss', () => {
             gulp.src(_.union(paths.client.styles, ['!' + paths.client.mainStyle]), {read: false})
                 .pipe(plugins.sort()),
             {
-                starttag: '// injector',
-                endtag: '// endinjector',
                 transform: (filepath) => {
                     let newPath = filepath
                         .replace(`/${clientPath}/app/`, '')
@@ -262,7 +267,11 @@ gulp.task('transpile:server', () => {
 gulp.task('lint:scripts', cb => runSequence(['lint:scripts:client', 'lint:scripts:server'], cb));
 
 gulp.task('lint:scripts:client', () => {
-    return gulp.src(_.union(paths.client.scripts, _.map(paths.client.test, blob => '!' + blob)))
+    return gulp.src(_.union(
+        paths.client.scripts,
+        _.map(paths.client.test, blob => '!' + blob),
+        [`!${clientPath}/app/app.constant.js`]
+    ))
         .pipe(lintClientScripts());
 });
 
@@ -370,7 +379,7 @@ gulp.task('test:server', cb => {
         'env:test',
         'mocha:unit',
         'mocha:integration',
-        //'mocha:coverage',
+        'mocha:coverage',
         cb);
 });
 
@@ -399,7 +408,7 @@ gulp.task('wiredep:client', () => {
                 /bootstrap-sass-official/,
                 /json3/,
                 /es5-shim/,
-                /font-awesome.css/
+                /bootstrap.css/
             ],
             ignorePath: clientPath
         }))
@@ -411,8 +420,10 @@ gulp.task('wiredep:test', () => {
         .pipe(wiredep({
             exclude: [
                 /bootstrap-sass-official/,
+                /bootstrap.js/,
                 '/json3/',
                 '/es5-shim/',
+                /bootstrap.css/,
                 /font-awesome.css/
             ],
             devDependencies: true
@@ -427,13 +438,16 @@ gulp.task('wiredep:test', () => {
 //FIXME: looks like font-awesome isn't getting loaded
 gulp.task('build', cb => {
     runSequence(
-        'clean:dist',
-        'clean:tmp',
+        [
+            'clean:dist',
+            'clean:tmp'
+        ],
         'inject',
         'wiredep:client',
         [
             'build:images',
             'copy:extras',
+            'copy:fonts',
             'copy:assets',
             'copy:server',
             'transpile:server',
@@ -447,30 +461,30 @@ gulp.task('clean:dist', () => del([`${paths.dist}/!(.git*|.openshift|Procfile)**
 gulp.task('build:client', ['transpile:client', 'styles', 'html', 'constant'], () => {
     var manifest = gulp.src(`${paths.dist}/${clientPath}/assets/rev-manifest.json`);
 
-    var appFilter = plugins.filter('**/app.js');
-    var jsFilter = plugins.filter('**/*.js');
-    var cssFilter = plugins.filter('**/*.css');
-    var htmlBlock = plugins.filter(['**/*.!(html)']);
+    var appFilter = plugins.filter('**/app.js', {restore: true});
+    var jsFilter = plugins.filter('**/*.js', {restore: true});
+    var cssFilter = plugins.filter('**/*.css', {restore: true});
+    var htmlBlock = plugins.filter(['**/*.!(html)'], {restore: true});
 
     return gulp.src(paths.client.mainView)
         .pipe(plugins.useref())
             .pipe(appFilter)
                 .pipe(plugins.addSrc.append('.tmp/templates.js'))
                 .pipe(plugins.concat('app/app.js'))
-            .pipe(appFilter.restore())
+            .pipe(appFilter.restore)
             .pipe(jsFilter)
                 .pipe(plugins.ngAnnotate())
                 .pipe(plugins.uglify())
-            .pipe(jsFilter.restore())
+            .pipe(jsFilter.restore)
             .pipe(cssFilter)
                 .pipe(plugins.minifyCss({
                     cache: true,
                     processImportFrom: ['!fonts.googleapis.com']
                 }))
-            .pipe(cssFilter.restore())
+            .pipe(cssFilter.restore)
             .pipe(htmlBlock)
                 .pipe(plugins.rev())
-            .pipe(htmlBlock.restore())
+            .pipe(htmlBlock.restore)
         .pipe(plugins.revReplace({manifest}))
         .pipe(gulp.dest(`${paths.dist}/${clientPath}`));
 });
@@ -500,21 +514,18 @@ gulp.task('constant', function() {
 
 gulp.task('build:images', () => {
     return gulp.src(paths.client.images)
+        .pipe(plugins.imagemin({
+            optimizationLevel: 5,
+            progressive: true,
+            interlaced: true
+        }))
+        .pipe(plugins.rev())
         .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets/images`))
-
-    // return gulp.src(paths.client.images)
-    //     .pipe(plugins.imagemin({
-    //         optimizationLevel: 5,
-    //         progressive: true,
-    //         interlaced: true
-    //     }))
-    //     .pipe(plugins.rev())
-    //     .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets/images`))
-    //     .pipe(plugins.rev.manifest(`${paths.dist}/${clientPath}/assets/rev-manifest.json`, {
-    //         base: `${paths.dist}/${clientPath}/assets`,
-    //         merge: true
-    //     }))
-    //     .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets`));
+        .pipe(plugins.rev.manifest(`${paths.dist}/${clientPath}/assets/rev-manifest.json`, {
+            base: `${paths.dist}/${clientPath}/assets`,
+            merge: true
+        }))
+        .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets`));
 });
 
 gulp.task('copy:extras', () => {
@@ -526,8 +537,13 @@ gulp.task('copy:extras', () => {
         .pipe(gulp.dest(`${paths.dist}/${clientPath}`));
 });
 
+gulp.task('copy:fonts', () => {
+    return gulp.src(`${clientPath}/bower_components/font-awesome/fonts/**/*`, { dot: true })
+        .pipe(gulp.dest(`${paths.dist}/${clientPath}/bower_components`));
+});
+
 gulp.task('copy:assets', () => {
-    return gulp.src([paths.client.assets, '!' + paths.client.images])
+    return gulp.src([paths.client.assets])
         .pipe(gulp.dest(`${paths.dist}/${clientPath}/assets`));
 });
 
@@ -543,9 +559,12 @@ gulp.task('copy:server', () => {
 gulp.task('coverage:pre', () => {
   return gulp.src(paths.server.scripts)
     // Covering files
-    .pipe(plugins.babelIstanbul())
+    .pipe(plugins.istanbul({
+        instrumenter: Instrumenter, // Use the isparta instrumenter (code coverage for ES6)
+        includeUntested: true
+    }))
     // Force `require` to return covered files
-    .pipe(plugins.babelIstanbul.hookRequire());
+    .pipe(plugins.istanbul.hookRequire());
 });
 
 gulp.task('coverage:unit', () => {

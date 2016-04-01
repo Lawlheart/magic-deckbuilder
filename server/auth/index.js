@@ -11,7 +11,7 @@ require('./twitter/passport').setup(User, config);
 
 var router = express.Router();
 
-router.use('/local', require('./local'));
-router.use('/twitter', require('./twitter'));
+router.use('/local', require('./local').default);
+router.use('/twitter', require('./twitter').default);
 
-export default router;
+module.exports = router;

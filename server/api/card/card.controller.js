@@ -23,9 +23,9 @@ function respondWithResult(res, statusCode) {
 
 function saveUpdates(updates) {
   return function(entity) {
-    var updated = _.merge(entity, updates);
-    return updated.saveAsync()
-      .spread(updated => {
+    var updated = _.extend(entity, updates);
+    return updated.save()
+      .then(updated => {
         return updated;
       });
   };
@@ -34,7 +34,7 @@ function saveUpdates(updates) {
 function removeEntity(res) {
   return function(entity) {
     if (entity) {
-      return entity.removeAsync()
+      return entity.remove()
         .then(() => {
           res.status(204).end();
         });
@@ -59,7 +59,6 @@ function handleError(res, statusCode) {
   };
 }
 
-
 //searches cards db
 export function search(req, res) {
   Card.search(req.query.search, {name: 1}, {
@@ -73,14 +72,14 @@ export function search(req, res) {
 
 // Gets a list of Cards
 export function index(req, res) {
-  Card.findAsync()
+  Card.find().exec()
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
 
 // Gets a single Card from the DB
 export function show(req, res) {
-  Card.findByIdAsync(req.params.id)
+  Card.findById(req.params.id).exec()
     .then(handleEntityNotFound(res))
     .then(respondWithResult(res))
     .catch(handleError(res));
@@ -88,7 +87,7 @@ export function show(req, res) {
 
 // Creates a new Card in the DB
 export function create(req, res) {
-  Card.createAsync(req.body)
+  Card.create(req.body).exec()
     .then(respondWithResult(res, 201))
     .catch(handleError(res));
 }
@@ -98,7 +97,7 @@ export function update(req, res) {
   if (req.body._id) {
     delete req.body._id;
   }
-  Card.findByIdAsync(req.params.id)
+  Card.findById(req.params.id).exec()
     .then(handleEntityNotFound(res))
     .then(saveUpdates(req.body))
     .then(respondWithResult(res))
@@ -107,7 +106,7 @@ export function update(req, res) {
 
 // Deletes a Card from the DB
 export function destroy(req, res) {
-  Card.findByIdAsync(req.params.id)
+  Card.findById(req.params.id).exec()
     .then(handleEntityNotFound(res))
     .then(removeEntity(res))
     .catch(handleError(res));

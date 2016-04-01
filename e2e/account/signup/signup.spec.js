@@ -1,7 +1,7 @@
 'use strict';
 
 var config = browser.params;
-var UserModel = require(config.serverConfig.root + '/server/api/user/user.model');
+var UserModel = require(config.serverConfig.root + '/server/api/user/user.model').default;
 
 describe('Signup View', function() {
   var page;
@@ -47,7 +47,7 @@ describe('Signup View', function() {
   describe('with local auth', function() {
 
     beforeAll(function(done) {
-      UserModel.removeAsync().then(done);
+      UserModel.remove().then(done);
     });
 
     it('should signup a new user, log them in, and redirecting to "/"', function() {

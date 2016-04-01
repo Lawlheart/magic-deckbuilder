@@ -9,6 +9,7 @@ angular.module('magicApp')
 			}
 		};
 
+		var BASIC_LANDS = ["Forest", "Mountain", "Island", "Plains", "Swamp"];
 
 		var magic = {
 			Deck: function(name, type) {
@@ -18,6 +19,10 @@ angular.module('magicApp')
 			}, 
 			getLegality: function() {
 
+			},
+			isLegalDeck: function(deck) {
+				console.log("checking legality");
+				console.log(deck.type);
 			},
 			getDecks: function() {
 				return $http.get('/api/decks/').success(function(data) {
@@ -61,6 +66,18 @@ angular.module('magicApp')
 
 	};
 
+	magic.Deck.prototype.addCard = function(multiverseid, callback) {
+		var deck = this;
+		var copyLimit = this.type === "standard" ? 4 : 1;
+		$http.get('/api/cards/' + multiverseid).success(function(card) {
+			var copies = deck.cards.filter((c) => c.name == card.name).length;
+			if(BASIC_LANDS.indexOf(card.name) >= 0 || copies + 1 <= copyLimit) {
+				deck.cards.push(card);
+			}
+				callback(deck.cards);
+			}).error(errorHandler);
+	}
+
 	magic.Deck.prototype.addCards = function(cards, callback) {
 		if(!cards) {
 			return;
@@ -70,13 +87,15 @@ angular.module('magicApp')
 		}
 		var startNum = this.cards.length;
 		var deck = this;
+		var copyLimit = this.type === "standard" ? 4 : 1;
 		//iterates over cards and calls api on each. last card triggers callback with this.cards
-		for(var i=0;i<cards.length;i++) {
+		for(let i=0;i<cards.length;i++) {
 			$http.get('/api/cards/' + cards[i]).success(function(card) {
-				deck.cards.push(card);
-				console.log(deck.cards.length - startNum === cards.length)
-				if(deck.cards.length - startNum === cards.length && callback) {
-					console.log('final card');
+				var copies = deck.cards.filter((c) => c.name == card.name).length;
+				if(BASIC_LANDS.indexOf(card.name) >= 0 || copies + 1 <= copyLimit) {
+					deck.cards.push(card);
+				}
+				if(i === cards.length - 1) {
 					callback(deck.cards);
 				}
 			}).error(errorHandler);

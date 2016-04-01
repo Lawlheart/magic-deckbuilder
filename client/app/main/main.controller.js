@@ -7,7 +7,7 @@ angular.module('magicApp')
       $scope.decks = data;
     });
     $('main').on('click', '.deck', function(e) {
-    	$(e.target).next().slideToggle()
+    	$(e.target).nextAll('.decklist').slideToggle()
     })
   });
 

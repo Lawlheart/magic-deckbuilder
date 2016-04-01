@@ -1,7 +1,8 @@
 'use strict';
 
 import crypto from 'crypto';
-var mongoose = require('bluebird').promisifyAll(require('mongoose'));
+import mongoose from 'mongoose';
+mongoose.Promise = require('bluebird');
 import {Schema} from 'mongoose';
 
 const authTypes = ['github', 'twitter', 'facebook', 'google'];
@@ -76,7 +77,7 @@ UserSchema
   .path('email')
   .validate(function(value, respond) {
     var self = this;
-    return this.constructor.findOneAsync({ email: value })
+    return this.constructor.findOne({ email: value }).exec()
       .then(function(user) {
         if (user) {
           if (self.id === user.id) {
@@ -106,18 +107,18 @@ UserSchema
     }
 
     if (!validatePresenceOf(this.password) && authTypes.indexOf(this.provider) === -1) {
-      next(new Error('Invalid password'));
+      return next(new Error('Invalid password'));
     }
 
     // Make salt with a callback
     this.makeSalt((saltErr, salt) => {
       if (saltErr) {
-        next(saltErr);
+        return next(saltErr);
       }
       this.salt = salt;
       this.encryptPassword(this.password, (encryptErr, hashedPassword) => {
         if (encryptErr) {
-          next(encryptErr);
+          return next(encryptErr);
         }
         this.password = hashedPassword;
         next();

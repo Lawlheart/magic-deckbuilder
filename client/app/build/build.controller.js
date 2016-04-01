@@ -34,6 +34,7 @@ angular.module('magicApp')
       $magic.saveDeck($scope.currentDeck).success(function(data) {
         $scope.currentDeck._id = data._id;
         debug(data);
+        alert("Deck Saved Successfully");
       }).error(errorHandler);
 		};
     $scope.deckList = function() {
@@ -63,10 +64,9 @@ angular.module('magicApp')
 			}).error(errorHandler);
 		};
 		$scope.addCard = function(multiverseid) {
-			$scope.currentDeck.addCards(multiverseid, function(cards) {
-        console.log('cards: ', cards);
+			$scope.currentDeck.addCard(multiverseid, function(cards) {
+        console.log($scope.currentDeck);
       });
-      console.log($scope.currentDeck);
 		};
 		$scope.removeCard = function(multiverseid) {
 			$scope.currentDeck.removeCards(multiverseid, function(cards) {
@@ -76,6 +76,7 @@ angular.module('magicApp')
     $scope.addProtos = function() {
       //Deck methods: addCards, removeCards, draw, renderCards, analysis, export
       $scope.currentDeck.addCards = $magic.Deck.prototype.addCards;
+      $scope.currentDeck.addCard = $magic.Deck.prototype.addCard;
       $scope.currentDeck.removeCards = $magic.Deck.prototype.removeCards;
       $scope.currentDeck.draw = $magic.Deck.prototype.draw;
       $scope.currentDeck.renderCards = $magic.Deck.prototype.renderCards;
