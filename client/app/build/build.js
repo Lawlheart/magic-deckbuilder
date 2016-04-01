@@ -6,6 +6,7 @@ angular.module('magicApp')
       .state('build', {
         url: '/build',
         templateUrl: 'app/build/build.html',
-        controller: 'BuildCtrl'
+        controller: 'BuildCtrl',
+        authenticate: true
       });
   });

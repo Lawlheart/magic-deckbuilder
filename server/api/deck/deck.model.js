@@ -3,10 +3,10 @@
 var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
 var DeckSchema = new mongoose.Schema({
-	_id: String,
   name: String,
   type: String,
   user: String,
+  user_id: String,
   cards: []
 }, {strict: false});
 

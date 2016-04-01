@@ -37,3 +37,7 @@ Magic:the Gathering Deckbuilder that I built using MEAN stack. Originally just a
 ##### Notes
 
 on card submit, clear search and move cursor to input
+on deck save, toast
+maybe on click searchbar, highlight all?
+after first save, second save gives error
+onclick toggle on decks needs work

@@ -1,4 +1,4 @@
-var fs = require('fs');;
+var fs = require('fs');
 var sets = require('../../../allSets.json');
 var mongoose = require('mongoose');
 var searchPlugin = require('mongoose-search-plugin');

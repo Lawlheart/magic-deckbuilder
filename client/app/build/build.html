@@ -25,7 +25,7 @@
 			</form>
 			<div id="results">
 				<ul class="cards list-group" >
-					<li ng-repeat="card in searchResults"  
+					<li ng-repeat="card in searchResults | filter:searchName"  
 						  class="list-group-item"
 							ng-click="getCard(card._id)">{{card.name}}</li>
 				</ul>

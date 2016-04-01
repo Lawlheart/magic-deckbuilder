@@ -3,12 +3,19 @@
 describe('Service: magic', function () {
 
   // load the service's module
-  beforeEach(module('magicApp'));
+  ;
 
   // instantiate service
-  var magic;
-  beforeEach(inject(function (_$magic_) {
+  var magic;  
+  var scope;
+  var $httpBackend;
+  beforeEach(inject(function(_$magic_, $rootScope, _$httpBackend_,) { 
+    $httpBackend = _$httpBackend_;
+    $httpBackend.expectGET('app/main/main.html')
+    //   .respond(['HTML5 Boilerplate', 'AngularJS', 'Karma', 'Express']);
+    
     magic = _$magic_;
+    scope = $rootScope.$new();
   }));
 
   it('should do something', function () {
@@ -28,43 +35,26 @@ describe('Service: magic', function () {
       expect(deck.type).toBe('standard');
       expect(typeof deck.cards).toBe('object');
     });
-
-    //having trouble with async calls, tests may be false positives
-    describe('The addCards method', function() {
-      var deck;
-      beforeEach(function(done) {
-        deck = new magic.Deck('test', 'standard');
-        console.log('adding cards')
-        deck.addCards([236504, 369045, 401891, 401891, 401891], function(cards) {
-          console.log(cards);
-          done();
-        });
-      });
-
-      it('should add cards properly given a multiverseid', function() {
-        expect(deck.cards.length).toBe(2);
-        expect(deck.cards[0].name).toBe('Animar, Soul of Elements');
-        expect(deck.cards[1].multiverseid).toBe(369045);
-        expect(deck.cards[1].hasOwnProperty('name')).toBe(true);
-      });
-      it('should properly add multiple copies of one card', function() {
-          expect(deck.cards.length).toBe(5);
-      });
-
-
-
-    });
-    
-    // describe('The removeCards method', function() {
-    //   it('should remove the right card given a multiverseid', function() {
-    //     var deck = new magic.Deck('test', 'standard');
-    //     deck.addCards([236504, 369045, 401891, 401891, 401891]);
-    //   });
-    // });
-
-
   });
 
+  // getDecks method
+  describe('The Get Decks Method', function() {
+    var decks = 2;
+    beforeEach(function(done) {
+      inject(function($rootScope, $httpBackend) {
+        $httpBackend.expectGET('/api/decks/')
+          .respond(['HTML5 Boilerplate', 'AngularJS', 'Karma', 'Express']);
+        magic.getDecks().success(function(data) {
+          decks = data;
+          console.log(decks)
+          done();
+          $rootScope.$apply();
+        });
+      });
+    });
 
-
+    it('should get something', function() { 
+      expect(decks).toBe(2);   
+    });
+  });
 });

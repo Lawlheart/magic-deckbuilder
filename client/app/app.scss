@@ -43,6 +43,13 @@ body {
   background-color: #222;
   color:#fff;
 }
+ul {
+  margin: 0;
+  padding: 0;
+  li {
+    list-style: none;
+  }
+}
 
 input.form-control, select.form-control {
   background-color: #111;

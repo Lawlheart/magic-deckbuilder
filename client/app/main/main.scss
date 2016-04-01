@@ -1,27 +1,55 @@
-.thing-form {
-  margin: 20px 0;
+.updates, .decks-sidebar {
+  width: 40%;
+  margin: 20px 5%;
+  float: left;
+  max-height: 500px;
+  overflow: auto;
+}
+#results, #deck {
+  max-height: 320px;
+  overflow: auto;
+  .list-group-item {
+    background-color: #111;
+    color:#fff;
+    border-color:#262626;
+    padding:5px 15px;
+    cursor:pointer;
+  }
+}
+#cardImage {
+  background-color: #3b3b3b;
+  border-radius: 5px;
+  float:right;
+  width:250px;
+  height:380px;
+  padding:14px;
+  img {
+    border-radius: 10px;
+  }
 }
 
-#banner {
-  border-bottom: none;
-  margin-top: -20px;
-}
 
-#banner h1 {
-  font-size: 60px;
-  line-height: 1;
-  letter-spacing: -1px;
-}
 
-.hero-unit {
-  position: relative;
-  padding: 30px 15px;
-  color: #F5F5F5;
-  text-align: center;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-  background: #4393B9;
-}
 
-.navbar-text {
-  margin-left: 15px;
+.deck.well {
+  cursor: pointer;
+  background: linear-gradient(#333, #111);
+  border-color: #111; 
+  margin-bottom: 0;
+  .deck-title {
+    display: inline; 
+  }
+  .title-text {
+    padding-left: 20px; 
+  }
+  .badge {
+    font-size: 75%; 
+  }
+}
+.list-group-item {
+  background-color: #111;
+  color:#fff;
+  border-color:#262626;
+  padding:5px 15px;
+  cursor:pointer;
 }

@@ -1,7 +1,7 @@
 <div class="page-wrap">
 <navbar></navbar>
 <main>
-  <div class="container">
+  <div class="updates">
     <h1>Welcome to my Deckbuilder</h1>
     <p>The site is currently under construction.</p>
     <h3>Available Features</h3>
@@ -17,7 +17,24 @@
       <li>Card Search</li>
     </ul>
   </div>
-
+  <div class="decks-sidebar">
+    <h3>Decks</h3>
+    <ul class="decks">
+      <div ng-repeat="deck in decks">  
+        <li class="deck well">
+          <h4 class="deck-title">
+            <span class="label label-success pull-left">{{deck.type}}</span>
+            <span class="title-text">{{deck.name}} - </span>
+            <span class="user-text">{{deck.user}}</span>
+            <span class="badge pull-right">{{deck.cards.length}}</span>
+          </h4>
+        </li>
+        <ul class="list-group decklist">
+          <li ng-repeat="card in deck.cards" class="list-group-item" ng-click="getCard(card._id)">{{card.name}}</li>
+        </ul>
+      </div>
+    </ul>
+  </div>
 
 </main>
 </div>

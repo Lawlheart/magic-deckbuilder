@@ -24,7 +24,7 @@ angular.module('magicApp')
 					return data;
 				}).error(function(err) {
 					return err;
-				})
+				});
 			},
 			cardSearch: function(name) {
 				return $http.get('/api/cards/search?search=' + encodeURI(name)).success(function(data) {
@@ -45,17 +45,17 @@ angular.module('magicApp')
 					return data;
 				}).error(function(err) {
 					return err;
-				})
+				});
 			},
 			newDeck: function(deck) {
 				return $http.post('/api/decks/', deck).success(function(data) {
 					return data;
 				}).error(function(err) {
 					return err;
-				})
+				});
 			},
 			loadDeck: function(deck) {
-
+				console.log(deck);
 			}
 
 
@@ -65,31 +65,32 @@ angular.module('magicApp')
 		if(!cards) {
 			return;
 		}
-		var startNum = this.cards.length;
 		if(typeof cards === 'string' || typeof cards === 'number') {
 			cards = [cards];
 		}
-
+		var startNum = this.cards.length;
+		var deck = this;
 		//iterates over cards and calls api on each. last card triggers callback with this.cards
 		for(var i=0;i<cards.length;i++) {
-			var deck = this;
 			$http.get('/api/cards/' + cards[i]).success(function(card) {
 				deck.cards.push(card);
-				if(deck.cards.length - startNum === cards.length) {
-					console.log('final card')
+				console.log(deck.cards.length - startNum === cards.length)
+				if(deck.cards.length - startNum === cards.length && callback) {
+					console.log('final card');
 					callback(deck.cards);
 				}
 			}).error(errorHandler);
 		}	
 	};
 
-	magic.Deck.prototype.removeCards = function() {
+	magic.Deck.prototype.removeCards = function(mvid) {
 		//removes cards from deck
 		var MVIDs = this.cards.map(function(card) {
-			console.log(card.multiverseid);
 			return card.multiverseid;
 		});
-		console.log(MVIDs);
+		if(MVIDs.indexOf(mvid) >= 0) {
+			this.cards.splice(MVIDs.indexOf(mvid), 1);
+		}
 	};
 	magic.Deck.prototype.draw = function() {
 		// randomize and draw cards
