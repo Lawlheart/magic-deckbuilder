@@ -81,7 +81,7 @@
     "run-sequence": "^1.1.0",
     "lazypipe": "^0.2.4",
     "wiredep": "^2.2.2",
-    "open": "~0.0.4",
+    "open": "~7.2.1",
     "jshint-stylish": "~2.1.0",
     "connect-livereload": "^0.5.3",
     "istanbul": "~0.4.1",
