@@ -3,9 +3,6 @@ var sets = require('../../../allSets.json');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// mongoose.connect('mongodb://lawliet:answeris42@ds039504.mongolab.com:39504/mtg');
-// mongoose.connect('mongodb://localhost/magic-dev');
-
 var BlockSchema = new mongoose.Schema({
 	_id: String,
 	name: String,
